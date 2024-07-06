@@ -8,8 +8,6 @@
                     v-if="current_permissions.has('departments-create')">New Department</button>
                 </div>
                 <div class="card-body">
-                    <button @click="testAction" class="btn btn-info">test</button>
-                    {{ test }}
                     <div class="table-responsive">
                         <table class="table table-hover text-center">
                             <thead>

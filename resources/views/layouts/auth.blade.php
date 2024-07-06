@@ -17,6 +17,10 @@
                         <img src="{{ asset('images/auth.png') }}" width="100%" alt="auth">
                     </div>
                     <div class="col-md-6">
+                        @if (Session::has('success_message'))
+                        <p class="text-success text-center">{{ Session::get('success_message') }}</p>
+                        @endif
+
                         @yield('content')
                     </div>
                 </div>

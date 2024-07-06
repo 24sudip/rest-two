@@ -56,18 +56,6 @@
                         <li>
                             <a href="#">Tasks Inbox</a>
                         </li>
-                        {{-- <li>
-                            <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Pages</a>
-                            <ul class="collapse list-unstyled" id="pageSubmenu">
-                                <li><a href="#">Page 1</a></li>
-                            </ul>
-                        </li> --}}
-                        {{-- <li>
-                        <a href="#">Portfolio</a>
-                        </li>
-                        <li>
-                        <a href="#">Contact</a>
-                        </li> --}}
                     </ul>
 
                     <div class="footer">
@@ -106,14 +94,9 @@
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST">
                                         @csrf
+                                        <logout-component></logout-component>
                                     </form>
                                 </li>
-                                {{-- <li class="nav-item">
-                                    <a class="nav-link" href="#">Portfolio</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Contact</a>
-                                </li> --}}
                             </ul>
                         </div>
                     </div>
@@ -134,6 +117,7 @@
 		</div>
         @auth
         <script>
+            window.token = {!! json_encode(session()->get('token')) !!};
             window.auth_roles = {!! json_encode(auth()->user()->roles) !!};
             window.auth_permissions = {!! json_encode(auth()->user()->permissions) !!};
         </script>
