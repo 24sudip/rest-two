@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Permission;
 use Session;
+use Validator;
 
 class PermissionController extends Controller
 {
@@ -20,11 +21,14 @@ class PermissionController extends Controller
     public function PermissionStore(Request $request) {
         // return $request->all();
         if ($request->permission_type == 'basic') {
-            $request->validate([
+            $validation = Validator::make($request->all(), [
                 'name'=>'required',
                 'display_name'=>'required',
                 'description'=>'required',
             ]);
+            if ($validation->fails()) {
+                return redirect()->back()->withErrors($validation);
+            }
             Permission::create([
                 'name'=>$request->name,
                 'display_name'=>$request->display_name,
@@ -32,9 +36,12 @@ class PermissionController extends Controller
             ]);
             Session::flash('success_message','Permission Created Successfully!');
         } else if($request->permission_type == 'crud') {
-            $request->validate([
+            $validation = Validator::make($request->all(), [
                 'resource'=>'required',
             ]);
+            if ($validation->fails()) {
+                return redirect()->back()->withErrors($validation);
+            }
             $crud = $request->crudSelected;
             if (count($crud) > 0) {
                 foreach ($crud as $item) {
@@ -59,11 +66,14 @@ class PermissionController extends Controller
     }
 
     public function PermissionUpdate(Request $request, $id) {
-        $request->validate([
+        $validation = Validator::make($request->all(), [
             'name'=>'required',
             'display_name'=>'required',
             'description'=>'required',
         ]);
+        if ($validation->fails()) {
+            return redirect()->back()->withErrors($validation);
+        }
         Permission::where('id', $id)->update([
             'name'=>$request->name,
             'display_name'=>$request->display_name,

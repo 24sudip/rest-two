@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{HomeController, DepartmentController, UserController, RoleController, PermissionController};
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\{AuthController, ProfileController};
 
 /*
 |--------------------------------------------------------------------------
@@ -55,4 +55,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/user/index', [UserController::class, 'UserIndex'])->name('user.index')->middleware('permission:users-read');
+
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile/index', 'ProfileIndex')->name('profile.index')->middleware('permission:profile-read');
+        Route::post('/profile/update/{id}', 'ProfileUpdate')->name('profile.update')->middleware('permission:profile-update');
+        Route::post('/profile/password/update/{id}', 'ProfilePasswordUpdate')->name('profile.password.update')->middleware('permission:profile-password-update');
+    });
 });

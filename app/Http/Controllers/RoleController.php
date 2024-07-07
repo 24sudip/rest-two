@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Role;
 use Session;
+use Validator;
 
 class RoleController extends Controller
 {
@@ -18,11 +19,14 @@ class RoleController extends Controller
     }
 
     public function RoleStore(Request $request) {
-        $request->validate([
+        $validation = Validator::make($request->all(), [
             'name'=>['required'],
             'display_name'=>['required'],
             'description'=>['required'],
         ]);
+        if ($validation->fails()) {
+            return redirect()->back()->withErrors($validation);
+        }
         Role::create([
             'name'=>$request->name,
             'display_name'=>$request->display_name,
@@ -38,11 +42,14 @@ class RoleController extends Controller
     }
 
     public function RoleUpdate(Request $request, $id) {
-        $request->validate([
+        $validation = Validator::make($request->all(), [
             'name'=>['required'],
             'display_name'=>['required'],
             'description'=>['required'],
         ]);
+        if ($validation->fails()) {
+            return redirect()->back()->withErrors($validation);
+        }
         Role::where('id',$id)->update([
             'name'=>$request->name,
             'display_name'=>$request->display_name,
