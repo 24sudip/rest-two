@@ -14,7 +14,7 @@ class DepartmentController extends Controller
 
     // below code is related to vue js crud
     public function getDepartment() {
-        return response()->json(Department::latest()->get());
+        return response()->json(Department::latest()->paginate(1));
     }
 
     public function storeDepartment(Request $request) {

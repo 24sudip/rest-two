@@ -10,7 +10,7 @@ use Validator;
 class PermissionController extends Controller
 {
     public function PermissionIndex() {
-        $permissions = Permission::all();
+        $permissions = Permission::orderBy('id','desc')->paginate(10);
         return view('management.permission.Index', compact('permissions'));
     }
 

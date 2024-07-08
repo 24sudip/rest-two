@@ -10,7 +10,7 @@ use Validator;
 class RoleController extends Controller
 {
     public function RoleIndex() {
-        $roles = Role::all();
+        $roles = Role::orderBy('id','desc')->paginate(10);
         return view('management.role.Index', compact('roles'));
     }
 

@@ -19,7 +19,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(department, index) in department" :key="index">
+                                <tr v-for="(department, index) in department.data" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ department.name }}</td>
                                     <td v-if="current_permissions.has('departments-update') ||
@@ -34,6 +34,15 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="d-flex justify-content-center" v-if="departmentLinks.length > 3">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li :class="`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`"
+                                v-for="(link, index) in departmentLinks" :key="index"><a class="page-link" href="#"
+                                v-html="link.label" @click.prevent="getResult(link)"></a></li>
+                            </ul>
+                        </nav>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -92,8 +101,13 @@ import axios from 'axios';
             }
         },
         methods: {
-            // getDepartment() {
-            // },
+            getResult(link) {
+                if (!link.url || link.active) {
+                    return;
+                } else {
+                    this.$store.dispatch('getDepartmentResult', link);
+                }
+            },
             createDepartment() {
                 this.editMode = false;
                 this.departmentData.name = '';
@@ -131,9 +145,9 @@ import axios from 'axios';
             this.$store.dispatch('getAuthRolesAndPermissions');
         },
         computed: {
-            // test() {
-            //     return this.$store.getters.test;
-            // },
+            departmentLinks() {
+                return this.$store.getters.departmentLinks;
+            },
             department() {
                 return this.$store.getters.department;
             },

@@ -8,7 +8,6 @@
                     v-if="current_permissions.has('users-create')">New User</button>
                 </div>
                 <div class="card-body">
-                    <!-- <button @click="testAction" class="btn btn-info">test</button> -->
                     <div class="table-responsive">
                         <table class="table table-hover text-center">
                             <thead>
@@ -22,7 +21,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(user, index) in users" :key="index">
+                                <tr v-for="(user, index) in users.data" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ user.name }}</td>
                                     <td>{{ user.email }}</td>
@@ -39,6 +38,15 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="d-flex justify-content-center" v-if="userLinks.length > 3">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li :class="`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`"
+                                v-for="(link, index) in userLinks" :key="index"><a class="page-link" href="#"
+                                v-html="link.label" @click.prevent="getResult(link)"></a></li>
+                            </ul>
+                        </nav>
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -141,6 +149,13 @@
             }
         },
         methods: {
+            getResult(link) {
+                if (!link.url || link.active) {
+                    return;
+                } else {
+                    this.$store.dispatch('getUserResult', link);
+                }
+            },
             getFilteredPermissions(values) {
                 this.$store.dispatch('getFilteredPermissions', {values: values}).then(() => {
                     this.userData.selected_permissions = [];
@@ -209,6 +224,9 @@
         computed: {
             users() {
                 return this.$store.getters.users;
+            },
+            userLinks() {
+                return this.$store.getters.userLinks;
             },
             filtered_permissions() {
                 return this.$store.getters.filtered_permissions;
