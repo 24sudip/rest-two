@@ -52,6 +52,10 @@ export default {
                 .then((response) => {
                     context.dispatch("getDepartment");
                     $("#exampleModal").modal("hide");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Department Created Successfully",
+                    });
                 });
         },
         updateDepartment: (context, departmentData) => {
@@ -60,18 +64,24 @@ export default {
                 .then((response) => {
                     context.dispatch("getDepartment");
                     $("#exampleModal").modal("hide");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Department Updated Successfully",
+                    });
                 });
         },
         deleteDepartment: (context, departmentData) => {
-            if (confirm("Are you sure you wanna delete department!")) {
-                axios
-                    .post(
-                        window.url + "api/deleteDepartment/" + departmentData.id
-                    )
-                    .then(() => {
-                        context.dispatch("getDepartment");
-                    });
-            }
+            axios
+            .post(
+                window.url + "api/deleteDepartment/" + departmentData.id
+            )
+            .then(() => {
+                context.dispatch("getDepartment");
+                window.Toast.fire({
+                    icon: "success",
+                    title: "Department Deleted Successfully",
+                });
+            });
         },
     },
 };

@@ -50,10 +50,11 @@
 
                                     @can('permissions-delete')
                                     <div class="float-left mx-1">
-                                        <form action="{{ route('permission.delete', $permission->id) }}" method="post">
+                                        @include('management.permission.Delete')
+                                        {{-- <form action="{{ route('permission.delete', $permission->id) }}" method="post">
                                             @csrf
                                             <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                        </form>
+                                        </form> --}}
                                     </div>
                                     @endcan
                                 </td>

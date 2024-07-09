@@ -18,7 +18,10 @@
                     </div>
                     <div class="col-md-6">
                         @if (Session::has('success_message'))
-                        <p class="text-success text-center">{{ Session::get('success_message') }}</p>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ Session::get('success_message') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         @endif
 
                         @yield('content')

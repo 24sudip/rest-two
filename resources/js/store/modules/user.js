@@ -46,6 +46,10 @@ export default {
             userData.post(window.url + "api/storeUser").then((response) => {
                 context.dispatch("getUser");
                 $("#exampleModal").modal("hide");
+                window.Toast.fire({
+                    icon: "success",
+                    title: "User Created Successfully",
+                });
             });
         },
         updateUser: (context, userData) => {
@@ -54,16 +58,22 @@ export default {
                 .then((response) => {
                     context.dispatch("getUser");
                     $("#exampleModal").modal("hide");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "User Updated Successfully",
+                    });
                 });
         },
         deleteUser: (context, userData) => {
-            if (confirm("Are you sure you wanna delete the user!")) {
-                axios
-                    .post(window.url + "api/deleteUser/" + userData.id)
-                    .then(() => {
-                        context.dispatch("getUser");
-                    });
-            }
+            axios
+            .post(window.url + "api/deleteUser/" + userData.id)
+            .then(() => {
+                context.dispatch("getUser");
+                window.Toast.fire({
+                    icon: "success",
+                    title: "User Deleted Successfully",
+                });
+            });
         },
     },
 };

@@ -134,7 +134,19 @@ import axios from 'axios';
                 // }
             },
             deleteDepartment(department) {
-                this.$store.dispatch('deleteDepartment', department);
+                Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.$store.dispatch('deleteDepartment', department);
+                    }
+                });
             },
             // testAction() {
             //     this.$store.dispatch('testAction');

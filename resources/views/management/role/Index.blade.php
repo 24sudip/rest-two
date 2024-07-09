@@ -50,10 +50,11 @@
 
                                     @can('roles-delete')
                                     <div class="float-left mx-1">
-                                        <form action="{{ route('role.delete', $role->id) }}" method="post">
+                                        @include('management.role.Delete')
+                                        {{-- <form action="{{ route('role.delete', $role->id) }}" method="post">
                                             @csrf
                                             <button class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                        </form>
+                                        </form> --}}
                                     </div>
                                     @endcan
                                 </td>
