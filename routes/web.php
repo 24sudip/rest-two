@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/role/edit/{id}', 'RoleEdit')->name('role.edit')->middleware('permission:roles-update');
         Route::post('/role/update/{id}', 'RoleUpdate')->name('role.update')->middleware('permission:roles-update');
         Route::post('/role/delete/{id}', 'RoleDelete')->name('role.delete')->middleware('permission:roles-delete');
+        Route::post('/role/search', 'RoleSearch')->name('role.search')->middleware('permission:roles-read');
     });
 
     Route::controller(PermissionController::class)->group(function () {
@@ -52,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permission/edit/{id}', 'PermissionEdit')->name('permission.edit')->middleware('permission:permissions-update');
         Route::post('/permission/update/{id}', 'PermissionUpdate')->name('permission.update')->middleware('permission:permissions-update');
         Route::post('/permission/delete/{id}', 'PermissionDelete')->name('permission.delete')->middleware('permission:permissions-delete');
+        Route::post('/permission/search', 'PermissionSearch')->name('permission.search')->middleware('permission:permissions-read');
     });
 
     Route::get('/user/index', [UserController::class, 'UserIndex'])->name('user.index')->middleware('permission:users-read');

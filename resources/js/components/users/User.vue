@@ -62,6 +62,23 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
+                                                <label for="search_type">Search Type</label>
+                                                <select name="search_type" class="form-control" v-model="searchData.search_type">
+                                                    <option value="name">Name</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="search_value">Search Value</label>
+                                                <input type="text" class="form-control" name="search_value"
+                                                v-model="searchData.search_value" @keyup="searchUser">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
                                                 <label for="name">Name</label>
                                                 <input type="text" class="form-control" v-model="userData.name">
                                                 <div class="text-danger" v-if="userData.errors.has('name')"
@@ -146,9 +163,16 @@
                     selected_permission_categories: [],
                     selected_permissions: [],
                 }),
+                searchData: {
+                    search_type: 'name',
+                    search_value: '',
+                },
             }
         },
         methods: {
+            searchUser() {
+                this.$store.dispatch('searchUser', this.searchData);
+            },
             getResult(link) {
                 if (!link.url || link.active) {
                     return;

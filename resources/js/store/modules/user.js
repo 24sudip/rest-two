@@ -19,12 +19,15 @@ export default {
             state.users = data;
             state.userLinks = [];
             for (let i = 0; i < data.links.length; i++) {
-                if (i === 1
-                    || i === Number(data.links.length - 2)
-                    || data.links[i].active
-                    || isNaN(data.links[i].label)
-                    || Number(data.links[i].label) === Number(data.current_page + 1)
-                    || Number(data.links[i].label) === Number(data.current_page - 1)
+                if (
+                    i === 1 ||
+                    i === Number(data.links.length - 2) ||
+                    data.links[i].active ||
+                    isNaN(data.links[i].label) ||
+                    Number(data.links[i].label) ===
+                        Number(data.current_page + 1) ||
+                    Number(data.links[i].label) ===
+                        Number(data.current_page - 1)
                 ) {
                     state.userLinks.push(data.links[i]);
                 }
@@ -32,6 +35,19 @@ export default {
         },
     },
     actions: {
+        searchUser: (context, searchData) => {
+            setTimeout(function() {
+                axios
+                    .get(
+                        `${window.url}api/searchUser?${searchData.search_type}=${searchData.search_value}`
+                    )
+                    .then((response) => {
+                        context.commit("set_user", response.data);
+                    }).catch(err => {
+                        console.log(err);
+                    });
+            });
+        },
         getUserResult: (context, link) => {
             axios.get(link.url).then((response) => {
                 context.commit("set_user", response.data);
@@ -66,14 +82,14 @@ export default {
         },
         deleteUser: (context, userData) => {
             axios
-            .post(window.url + "api/deleteUser/" + userData.id)
-            .then(() => {
-                context.dispatch("getUser");
-                window.Toast.fire({
-                    icon: "success",
-                    title: "User Deleted Successfully",
+                .post(window.url + "api/deleteUser/" + userData.id)
+                .then(() => {
+                    context.dispatch("getUser");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "User Deleted Successfully",
+                    });
                 });
-            });
         },
     },
 };

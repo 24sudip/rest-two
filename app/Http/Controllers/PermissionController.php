@@ -9,6 +9,17 @@ use Validator;
 
 class PermissionController extends Controller
 {
+    public function PermissionSearch(Request $request) {
+        if ($request->search_type == 'name') {
+            $search_value = $request->search_value;
+            $permissions = Permission::where(function ($query) use ($search_value) {
+                $query->where('name','LIKE',"%$search_value%")
+                ->orWhere('display_name','LIKE',"%$search_value%");
+            })->orderBy('id','desc')->paginate(10);
+        }
+        return view('management.permission.Index', compact('permissions','search_value'));
+    }
+
     public function PermissionIndex() {
         $permissions = Permission::orderBy('id','desc')->paginate(10);
         return view('management.permission.Index', compact('permissions'));
