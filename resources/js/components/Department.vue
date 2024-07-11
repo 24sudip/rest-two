@@ -8,6 +8,23 @@
                     v-if="current_permissions.has('departments-create')">New Department</button>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="search_type">Search Type</label>
+                                <select name="search_type" class="form-control" v-model="searchData.search_type">
+                                    <option value="name">Name</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="search_value">Search Value</label>
+                                <input type="text" class="form-control" name="search_value"
+                                v-model="searchData.search_value" @keyup="searchDepartment">
+                            </div>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover text-center">
                             <thead>
@@ -98,9 +115,16 @@ import axios from 'axios';
                 departmentError: {
                     name: false,
                 },
+                searchData: {
+                    search_type: 'name',
+                    search_value: '',
+                },
             }
         },
         methods: {
+            searchDepartment() {
+                this.$store.dispatch('searchDepartment', this.searchData);
+            },
             getResult(link) {
                 if (!link.url || link.active) {
                     return;

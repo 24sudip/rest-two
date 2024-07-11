@@ -35,6 +35,20 @@ export default {
         },
     },
     actions: {
+        searchDepartment: (context, searchData) => {
+            setTimeout(function () {
+                axios
+                    .get(
+                        `${window.url}api/searchDepartment?${searchData.search_type}=${searchData.search_value}`
+                    )
+                    .then((response) => {
+                        context.commit("set_department", response.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            });
+        },
         getDepartmentResult: (context, link) => {
             axios.get(link.url).then((response) => {
                 context.commit("set_department", response.data);
@@ -72,16 +86,14 @@ export default {
         },
         deleteDepartment: (context, departmentData) => {
             axios
-            .post(
-                window.url + "api/deleteDepartment/" + departmentData.id
-            )
-            .then(() => {
-                context.dispatch("getDepartment");
-                window.Toast.fire({
-                    icon: "success",
-                    title: "Department Deleted Successfully",
+                .post(window.url + "api/deleteDepartment/" + departmentData.id)
+                .then(() => {
+                    context.dispatch("getDepartment");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Department Deleted Successfully",
+                    });
                 });
-            });
         },
     },
 };

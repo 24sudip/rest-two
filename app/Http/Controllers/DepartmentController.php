@@ -13,6 +13,17 @@ class DepartmentController extends Controller
     // }
 
     // below code is related to vue js crud
+    public function searchDepartment() {
+        if ($search = \Request::get('name')) {
+            $departments = Department::where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%$search%");
+            })->latest()->paginate(10);
+        } else {
+            $departments = Department::latest()->paginate(10);
+        }
+        return response()->json($departments);
+    }
+
     public function getDepartment() {
         return response()->json(Department::latest()->paginate(10));
     }
