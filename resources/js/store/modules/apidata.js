@@ -8,6 +8,7 @@ export default {
         filtered_permission_categories: [],
         filtered_permissions: [],
         all_permissions: [],
+        filtered_users: [],
     },
     getters: {
         filtered_department(state) {
@@ -21,6 +22,9 @@ export default {
         },
         filtered_permissions(state) {
             return state.filtered_permissions;
+        },
+        filtered_users(state) {
+            return state.filtered_users;
         },
     },
     mutations: {
@@ -67,6 +71,9 @@ export default {
                 });
             });
         },
+        set_all_users: (state, data) => {
+            state.filtered_users = [];
+        },
     },
     actions: {
         getAllDepartment: (context) => {
@@ -86,6 +93,11 @@ export default {
         },
         getFilteredPermissions: (context, data) => {
             context.commit("set_filtered_permissions", data);
+        },
+        getAllUser: (context, data) => {
+            axios.get(`${window.url}api/getAllUser`).then((response) => {
+                context.commit("set_all_users", response.data);
+            });
         },
     },
 };

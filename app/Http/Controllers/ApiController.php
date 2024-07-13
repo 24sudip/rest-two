@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Department, Role, Permission};
+use App\Models\{Department, Role, Permission, User};
 
 class ApiController extends Controller
 {
@@ -17,5 +17,9 @@ class ApiController extends Controller
 
     public function getAllPermissions() {
         return response()->json(Permission::all());
+    }
+
+    public function getAllUser() {
+        return response()->json(User::with('department')->with('roles')->with('permissions')->get());
     }
 }

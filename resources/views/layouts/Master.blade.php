@@ -53,6 +53,12 @@
                             </ul>
                         </li>
                         @endcan
+
+                        @can('tasks-read')
+                        <li class="{{ Request::is('task/index') ? 'active' : ''}}">
+                            <a href="{{ route('task.index') }}">Assigned Tasks</a>
+                        </li>
+                        @endcan
                         <li>
                             <a href="#">Tasks Inbox</a>
                         </li>
@@ -124,6 +130,7 @@
         @auth
         <script>
             window.token = {!! json_encode(session()->get('token')) !!};
+            window.auth_user = {!! json_encode(auth()->user()) !!};
             window.auth_roles = {!! json_encode(auth()->user()->roles) !!};
             window.auth_permissions = {!! json_encode(auth()->user()->permissions) !!};
         </script>
