@@ -4,6 +4,7 @@ import { createStore } from "vuex";
 import apidataModule from "./modules/apidata";
 import departmentModule from "./modules/department";
 import userModule from "./modules/user";
+import taskModule from "./modules/task";
 
 export const store = createStore({
     strict: true,
@@ -11,6 +12,7 @@ export const store = createStore({
         departmentModule,
         apidataModule,
         userModule,
+        taskModule,
     },
     state: {
         // test: 0,

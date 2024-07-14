@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{DepartmentController, ApiController, UserController};
+use App\Http\Controllers\{DepartmentController, ApiController, UserController, TaskController};
 
 /*
 |--------------------------------------------------------------------------
@@ -41,5 +41,10 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
         Route::post('storeUser', 'storeUser')->middleware('permission:users-create');
         Route::post('updateUser/{id}', 'updateUser')->middleware('permission:users-update');
         Route::post('deleteUser/{id}', 'deleteUser')->middleware('permission:users-delete');
+    });
+
+    Route::controller(TaskController::class)->group(function () {
+        Route::get('getTask', 'getTask')->middleware('permission:tasks-read');
+        Route::post('storeTask', 'storeTask')->middleware('permission:tasks-create');
     });
 });

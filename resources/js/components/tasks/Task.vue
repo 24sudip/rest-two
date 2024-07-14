@@ -30,25 +30,41 @@
                             <thead>
                                 <tr>
                                     <th>SL</th>
-                                    <th>Name</th>
-                                    <th v-if="current_permissions.has('departments-update') ||
-                                    current_permissions.has('departments-delete')">Actions</th>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Description</th>
+                                    <th>Assign To</th>
+                                    <th v-if="current_permissions.has('tasks-update') ||
+                                    current_permissions.has('tasks-delete')">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr v-for="(department, index) in department.data" :key="index">
+                                <tr v-for="(task, index) in tasks.data" :key="index">
                                     <td>{{ index + 1 }}</td>
-                                    <td>{{ department.name }}</td>
-                                    <td v-if="current_permissions.has('departments-update') ||
-                                    current_permissions.has('departments-delete')">
-                                        <button class="btn btn-success mx-1" @click="editDepartment(department)">
+                                    <td>{{ task.title }}</td>
+                                    <td>
+                                        <span :class="`badge ${task.priority == 'Urgent' ? 'badge-danger' : 'badge-success'}`">
+                                            {{ task.priority }}
+                                        </span>
+                                    </td>
+                                    <td>{{ task.start_date }}</td>
+                                    <td>{{ task.end_date }}</td>
+                                    <td>
+                                        {{ task.description.length <= 10 ? task.description : task.description.substring(0,10) + '...' }}
+                                    </td>
+                                    <td>{{ task.users.length }} Staff Members</td>
+                                    <td v-if="current_permissions.has('tasks-update') ||
+                                    current_permissions.has('tasks-delete')">
+                                        <button class="btn btn-success mx-1" @click="editDepartment(task)">
                                             <i class="fa fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-danger mx-1" @click="deleteDepartment(department)">
+                                        <button class="btn btn-danger mx-1" @click="deleteDepartment(task)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
-                                </tr> -->
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -63,11 +79,11 @@
                     </div> -->
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">
-                                        {{ !editMode ? 'Create Department' : 'Update Department' }}
+                                        {{ !editMode ? 'Create Task' : 'Update Task' }}
                                     </h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
@@ -110,7 +126,7 @@
                                             <div class="form-group">
                                                 <label for="description">Description</label>
                                                 <textarea rows="3" class="form-control" v-model="taskData.description"></textarea>
-                                                <div class="text-danger" v-if="taskData.errors.has('description')" v-html="taskData.errors.get('description')" />
+                                                <div class="text-danger" v-if="taskData.errors.has('description')" v-html="taskData.errors.get('description')"/>
                                             </div>
                                         </div>
                                     </div>
@@ -119,13 +135,14 @@
                                             <div class="form-group">
                                                 <label for="assign_to">Assign To</label>
                                                 <multi-select :options="filtered_users" v-model="taskData.assign_to" :searchable="true" mode="tags"></multi-select>
+                                                <div class="text-danger" v-if="taskData.errors.has('assign_to')" v-html="taskData.errors.get('assign_to')" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" @click="!editMode ? storeDepartment() : updateDepartment()" class="btn btn-success">
+                                    <button type="button" @click="!editMode ? storeTask() : updateDepartment()" class="btn btn-success">
                                         {{ !editMode ? 'Store' : 'Save Changes' }}
                                     </button>
                                 </div>
@@ -141,10 +158,14 @@
 <script>
     export default {
         mounted() {
+            this.$store.dispatch('getTask');
             this.$store.dispatch('getAllUser');
             this.$store.dispatch('getAuthRolesAndPermissions');
         },
         computed: {
+            tasks() {
+                return this.$store.getters.tasks;
+            },
             filtered_users() {
                 return this.$store.getters.filtered_users;
             },
@@ -179,6 +200,9 @@
                 this.taskData.reset();
                 this.taskData.clear();
                 $('#exampleModal').modal('show');
+            },
+            storeTask() {
+                this.$store.dispatch('storeTask', this.taskData);
             },
         }
     }
