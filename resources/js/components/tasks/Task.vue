@@ -57,10 +57,10 @@
                                     <td>{{ task.users.length }} Staff Members</td>
                                     <td v-if="current_permissions.has('tasks-update') ||
                                     current_permissions.has('tasks-delete')">
-                                        <button class="btn btn-success mx-1" @click="editDepartment(task)">
+                                        <button class="btn btn-success mx-1" @click="editTask(task)">
                                             <i class="fa fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-danger mx-1" @click="deleteDepartment(task)">
+                                        <button class="btn btn-danger mx-1" @click="deleteTask(task)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -68,15 +68,15 @@
                             </tbody>
                         </table>
                     </div>
-                    <!-- <div class="d-flex justify-content-center" v-if="departmentLinks.length > 3">
+                    <div class="d-flex justify-content-center" v-if="taskLinks.length > 3">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
                                 <li :class="`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`"
-                                v-for="(link, index) in departmentLinks" :key="index"><a class="page-link" href="#"
+                                v-for="(link, index) in taskLinks" :key="index"><a class="page-link" href="#"
                                 v-html="link.label" @click.prevent="getResult(link)"></a></li>
                             </ul>
                         </nav>
-                    </div> -->
+                    </div>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -142,7 +142,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" @click="!editMode ? storeTask() : updateDepartment()" class="btn btn-success">
+                                    <button type="button" @click="!editMode ? storeTask() : updateTask()" class="btn btn-success">
                                         {{ !editMode ? 'Store' : 'Save Changes' }}
                                     </button>
                                 </div>
@@ -163,6 +163,9 @@
             this.$store.dispatch('getAuthRolesAndPermissions');
         },
         computed: {
+            taskLinks() {
+                return this.$store.getters.taskLinks;
+            },
             tasks() {
                 return this.$store.getters.tasks;
             },
@@ -195,6 +198,13 @@
             }
         },
         methods: {
+            getResult(link) {
+                if (!link.url || link.active) {
+                    return;
+                } else {
+                    this.$store.dispatch('getTaskResult', link);
+                }
+            },
             createTask() {
                 this.editMode = false;
                 this.taskData.reset();
@@ -204,6 +214,41 @@
             storeTask() {
                 this.$store.dispatch('storeTask', this.taskData);
             },
+            editTask(task) {
+                this.editMode = true;
+                this.taskData.reset();
+                this.taskData.clear();
+
+                this.taskData.id = task.id;
+                this.taskData.title = task.title;
+                this.taskData.priority = task.priority;
+                this.taskData.start_date = task.start_date;
+                this.taskData.end_date = task.end_date;
+                this.taskData.description = task.description;
+
+                task.users.forEach(user => {
+                    this.taskData.assign_to.push(user.id);
+                });;
+                $('#exampleModal').modal('show');
+            },
+            updateTask() {
+                this.$store.dispatch('updateTask', this.taskData);
+            },
+            deleteTask(task) {
+                Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.$store.dispatch('deleteTask', task);
+                    }
+                });
+            }
         }
     }
 </script>
