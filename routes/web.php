@@ -66,6 +66,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::controller(TaskController::class)->group(function () {
         Route::get('/task/index', 'TaskIndex')->name('task.index')->middleware('permission:tasks-read');
-        // Route::post('/orders', 'store');
+        Route::get('/task/inbox', 'TaskInbox')->name('task.inbox')->middleware('permission:inbox-read');
     });
 });

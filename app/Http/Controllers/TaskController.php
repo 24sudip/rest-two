@@ -64,4 +64,13 @@ class TaskController extends Controller
         $task->delete();
         return response()->json('success');
     }
+
+    public function TaskInbox() {
+        return view('task.Inbox');
+    }
+
+    public function getInboxTask() {
+        $tasks = auth('api')->user()->tasks()->where('status','0')->latest()->paginate(10);
+        return response()->json($tasks);
+    }
 }

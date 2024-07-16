@@ -228,7 +228,7 @@
 
                 task.users.forEach(user => {
                     this.taskData.assign_to.push(user.id);
-                });;
+                });
                 $('#exampleModal').modal('show');
             },
             updateTask() {
