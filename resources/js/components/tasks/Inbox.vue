@@ -140,7 +140,6 @@
                                                             <div class="form-group">
                                                                 <label for="result">Result</label>
                                                                 <textarea class="form-control" rows="3" v-model="performTaskData.result"></textarea>
-                                                                <div class="text-danger" v-if="performTaskData.errors.has('result')" v-html="performTaskData.errors.get('result')" />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -161,7 +160,13 @@
                                                         <div class="col-md-3">
                                                             <div class="form-group">
                                                                 <label for="file">File</label>
-                                                                <input type="file" class="form-control" @change="getPerformTaskFile($event)">
+                                                                <input type="file" class="form-control" id="task_file" @change="getPerformTaskFile($event)">
+                                                                <span>
+                                                                    {{ taskInfo.file ? 'Already Uploaded A File' : 'No File Uploaded Yet' }}
+                                                                </span><br>
+                                                                <span v-if="taskInfo.file">
+                                                                    File Name: {{ taskInfo.file }}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -223,8 +228,8 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" @click="!editMode ? storeTask() : updateTask()" class="btn btn-success">
-                                        {{ !editMode ? 'Store' : 'Save Changes' }}
+                                    <button type="button" @click="storePerformTask" class="btn btn-success">
+                                        Save Changes
                                     </button>
                                 </div>
                             </div>
@@ -261,13 +266,13 @@
                 editMode: false,
                 performMode: false,
                 taskInfo: {},
-                performTaskData: new Form ({
+                performTaskData: {
                     id: '',
                     task_info: {},
                     result: '',
-                    progress: '',
+                    progress: 0,
                     file: '',
-                }),
+                },
                 taskData: new Form ({
                     id: '',
                     title: '',
@@ -295,10 +300,22 @@
                 this.editMode = true;
                 this.performMode = true;
                 this.taskInfo = task;
+
+                this.performTaskData.result = task.result;
+                this.performTaskData.progress = task.progress;
                 $('#exampleModal').modal('show');
             },
             getPerformTaskFile(event) {
-
+                this.performTaskData.file = event.target.files[0];
+            },
+            storePerformTask() {
+                const config = {headers : {'content-type': 'multipart/form-data'}};
+                let formData = new FormData();
+                formData.append('task_id', this.taskInfo.id);
+                formData.append('result', this.performTaskData.result);
+                formData.append('progress', this.performTaskData.progress);
+                formData.append('file', this.performTaskData.file);
+                this.$store.dispatch('storePerformTask', {performTaskData: formData, config: config});
             },
         }
     }

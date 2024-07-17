@@ -95,6 +95,22 @@ export default {
                 context.commit("set_inbox_tasks", response.data);
             });
         },
+        storePerformTask: (context, data) => {
+            axios.post(
+                window.url + "api/storePerformTask",
+                data.performTaskData,
+                data.config
+            )
+            .then((response) => {
+                context.dispatch("getInboxTask");
+                $("#exampleModal").modal("hide");
+                $("#task_file").val("");
+                window.Toast.fire({
+                    icon: "success",
+                    title: "Task Performance Stored Successfully",
+                });
+            });
+        },
         storeTask: (context, taskData) => {
             taskData.post(window.url + "api/storeTask").then((response) => {
                 context.dispatch("getTask");
