@@ -88,42 +88,7 @@
                                                     <h5>Task Information</h5>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div class="table-responsive">
-                                                        <table class="table">
-                                                            <tr>
-                                                                <th style="width: 20%;">Title</th>
-                                                                <td>{{ taskInfo.title }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th style="width: 20%;">Priority</th>
-                                                                <td>
-                                                                    <span :class="`text-light badge ${taskInfo.priority == 'Urgent' ? 'bg-danger' : 'bg-success'}`">
-                                                                        {{ taskInfo.priority }}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th style="width: 20%;">Start Date</th>
-                                                                <td>{{ taskInfo.start_date }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th style="width: 20%;">End Date</th>
-                                                                <td>{{ taskInfo.end_date }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th style="width: 20%;">Description</th>
-                                                                <td>{{ taskInfo.description }}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th style="width: 20%;">Assign To</th>
-                                                                <td>
-                                                                    <span :class="`text-light badge bg-dark mx-1`" v-for="(user, index) in taskInfo.users" :key="index">
-                                                                        {{ user.name }}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
+                                                    <Show :taskInfo="taskInfo" />
                                                 </div>
                                             </div>
                                         </div>
@@ -242,17 +207,28 @@
 </template>
 
 <script>
+    import Show from './Show.vue';
     export default {
+        components: {
+            Show,
+        },
         mounted() {
             this.$store.dispatch('getInboxTask');
+            this.$store.dispatch('getCompletedTask');
             this.$store.dispatch('getAuthRolesAndPermissions');
         },
         computed: {
             inboxTaskLinks() {
                 return this.$store.getters.inboxTaskLinks;
             },
+            CompletedTaskLinks() {
+                return this.$store.getters.CompletedTaskLinks;
+            },
             inbox_tasks() {
                 return this.$store.getters.inbox_tasks;
+            },
+            completed_tasks() {
+                return this.$store.getters.completed_tasks;
             },
             current_roles() {
                 return this.$store.getters.current_roles;

@@ -95,21 +95,27 @@ export default {
                 context.commit("set_inbox_tasks", response.data);
             });
         },
-        storePerformTask: (context, data) => {
-            axios.post(
-                window.url + "api/storePerformTask",
-                data.performTaskData,
-                data.config
-            )
-            .then((response) => {
-                context.dispatch("getInboxTask");
-                $("#exampleModal").modal("hide");
-                $("#task_file").val("");
-                window.Toast.fire({
-                    icon: "success",
-                    title: "Task Performance Stored Successfully",
-                });
+        getCompletedTask: (context) => {
+            axios.get(`${window.url}api/getCompletedTask`).then((response) => {
+                context.commit("set_completed_tasks", response.data);
             });
+        },
+        storePerformTask: (context, data) => {
+            axios
+                .post(
+                    window.url + "api/storePerformTask",
+                    data.performTaskData,
+                    data.config
+                )
+                .then((response) => {
+                    context.dispatch("getInboxTask");
+                    $("#exampleModal").modal("hide");
+                    $("#task_file").val("");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Task Performance Stored Successfully",
+                    });
+                });
         },
         storeTask: (context, taskData) => {
             taskData.post(window.url + "api/storeTask").then((response) => {

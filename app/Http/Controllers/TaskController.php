@@ -13,7 +13,7 @@ class TaskController extends Controller
 
     public function getTask() {
         $user_id = auth('api')->user()->id;
-        return response()->json(Task::where('user_id', $user_id)->with('users')->latest()->paginate(2));
+        return response()->json(Task::where('user_id', $user_id)->with('users')->with('performed_by_user')->latest()->paginate(2));
     }
 
     public function storeTask(Request $request) {
@@ -106,5 +106,9 @@ class TaskController extends Controller
             'status'=>$status,
         ]);
         return response()->json('success');
+    }
+
+    public function TaskCompleted() {
+        return view('task.Completed');
     }
 }

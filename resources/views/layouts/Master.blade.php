@@ -65,6 +65,12 @@
                             <a href="{{ route('task.inbox') }}">Inbox Tasks</a>
                         </li>
                         @endcan
+
+                        @can('completed-read')
+                        <li class="{{ Request::is('task/completed') ? 'active' : ''}}">
+                            <a href="{{ route('task.completed') }}">Completed Tasks</a>
+                        </li>
+                        @endcan
                     </ul>
 
                     <div class="footer">
