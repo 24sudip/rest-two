@@ -50,6 +50,7 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
         Route::post('deleteTask/{id}', 'deleteTask')->middleware('permission:tasks-delete');
 
         Route::get('getInboxTask', 'getInboxTask')->middleware('permission:inbox-read');
+        Route::get('getCompletedTask', 'getCompletedTask')->middleware('permission:completed-read');
         Route::post('storePerformTask', 'storePerformTask')->middleware('permission:inbox-update');
     });
 });

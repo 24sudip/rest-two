@@ -3,7 +3,9 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-dark">
-                    <h5 class="float-start text-light">Inbox Tasks List</h5>
+                    <h5 class="float-start text-light">
+                        {{ page_type == 'inbox' ? 'Inbox Tasks List' : 'Completed Tasks List' }}
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -34,11 +36,14 @@
                                     <th>End Date</th>
                                     <th>Description</th>
                                     <th>Assign To</th>
-                                    <th v-if="current_permissions.has('inbox-update')">Actions</th>
+                                    <th>Status</th>
+                                    <th v-if="page_type == 'inbox' ? current_permissions.has('inbox-update')
+                                    : current_permissions.has('completed-update')
+                                    ">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(task, index) in inbox_tasks.data" :key="index">
+                                <tr v-for="(task, index) in (page_type == 'inbox' ? inbox_tasks.data : completed_tasks.data)" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ task.title }}</td>
                                     <td>
@@ -52,7 +57,13 @@
                                         {{ task.description.length <= 10 ? task.description : task.description.substring(0,10) + '...' }}
                                     </td>
                                     <td>{{ task.users.length }} Staff Members</td>
-                                    <td v-if="current_permissions.has('inbox-update')">
+                                    <td>
+                                        <p v-if="task.progress == 0" class="text-danger">No Progress</p>
+                                        <p v-if="task.progress > 0 && task.progress < 100" class="text-warning">Under Progress</p>
+                                        <p v-if="task.progress == 100" class="text-success">Completed</p>
+                                    </td>
+                                    <td v-if="page_type == 'inbox' ? current_permissions.has('inbox-update')
+                                    : current_permissions.has('completed-update')">
                                         <button class="btn btn-success mx-1" @click="performTask(task)">
                                             <i class="fa fa-check"></i>
                                         </button>
@@ -61,11 +72,11 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="d-flex justify-content-center" v-if="inboxTaskLinks.length > 3">
+                    <div class="d-flex justify-content-center" v-if="page_type == 'inbox' ? inboxTaskLinks.length > 3 : CompletedTaskLinks.length > 3">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
                                 <li :class="`page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`"
-                                v-for="(link, index) in inboxTaskLinks" :key="index"><a class="page-link" href="#"
+                                v-for="(link, index) in (page_type == 'inbox' ?  inboxTaskLinks : CompletedTaskLinks)" :key="index"><a class="page-link" href="#"
                                 v-html="link.label" @click.prevent="getResult(link)"></a></li>
                             </ul>
                         </nav>
@@ -216,6 +227,12 @@
             this.$store.dispatch('getInboxTask');
             this.$store.dispatch('getCompletedTask');
             this.$store.dispatch('getAuthRolesAndPermissions');
+
+            if (window.location.href.indexOf("task/inbox") > -1) {
+                this.page_type = 'inbox';
+            } else {
+                this.page_type = 'completed';
+            }
         },
         computed: {
             inboxTaskLinks() {
@@ -239,6 +256,7 @@
         },
         data() {
             return {
+                page_type: '',
                 editMode: false,
                 performMode: false,
                 taskInfo: {},
@@ -269,7 +287,11 @@
                 if (!link.url || link.active) {
                     return;
                 } else {
-                    this.$store.dispatch('getInboxTaskResult', link);
+                    if (this.page_type == 'inbox') {
+                        this.$store.dispatch('getInboxTaskResult', link);
+                    } else {
+                        this.$store.dispatch('getCompletedTaskResult', link);
+                    }
                 }
             },
             performTask(task) {

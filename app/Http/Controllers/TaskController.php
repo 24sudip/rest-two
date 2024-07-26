@@ -70,7 +70,7 @@ class TaskController extends Controller
     }
 
     public function getInboxTask() {
-        $tasks = auth('api')->user()->tasks()->where('status','0')->latest()->paginate(10);
+        $tasks = auth('api')->user()->tasks()->where('status','0')->latest()->paginate(1);
         return response()->json($tasks);
     }
 
@@ -110,5 +110,10 @@ class TaskController extends Controller
 
     public function TaskCompleted() {
         return view('task.Completed');
+    }
+
+    public function getCompletedTask() {
+        $tasks = auth('api')->user()->tasks()->where('status','1')->latest()->paginate(1);
+        return response()->json($tasks);
     }
 }

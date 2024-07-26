@@ -7,6 +7,8 @@ export default {
         taskLinks: [],
         inbox_tasks: {},
         inboxTaskLinks: [],
+        completed_tasks: {},
+        CompletedTaskLinks: [],
     },
     getters: {
         tasks(state) {
@@ -20,6 +22,12 @@ export default {
         },
         inboxTaskLinks(state) {
             return state.inboxTaskLinks;
+        },
+        completed_tasks(state) {
+            return state.completed_tasks;
+        },
+        CompletedTaskLinks(state) {
+            return state.CompletedTaskLinks;
         },
     },
     mutations: {
@@ -59,6 +67,24 @@ export default {
                 }
             }
         },
+        set_completed_tasks: (state, data) => {
+            state.completed_tasks = data;
+            state.CompletedTaskLinks = [];
+            for (let i = 0; i < data.links.length; i++) {
+                if (
+                    i === 1 ||
+                    i === Number(data.links.length - 2) ||
+                    data.links[i].active ||
+                    isNaN(data.links[i].label) ||
+                    Number(data.links[i].label) ===
+                        Number(data.current_page + 1) ||
+                    Number(data.links[i].label) ===
+                        Number(data.current_page - 1)
+                ) {
+                    state.CompletedTaskLinks.push(data.links[i]);
+                }
+            }
+        },
     },
     actions: {
         // searchDepartment: (context, searchData) => {
@@ -85,6 +111,11 @@ export default {
                 context.commit("set_inbox_tasks", response.data);
             });
         },
+        getCompletedTaskResult: (context, link) => {
+            axios.get(link.url).then((response) => {
+                context.commit("set_completed_tasks", response.data);
+            });
+        },
         getTask: (context) => {
             axios.get(`${window.url}api/getTask`).then((response) => {
                 context.commit("set_tasks", response.data);
@@ -108,7 +139,11 @@ export default {
                     data.config
                 )
                 .then((response) => {
-                    context.dispatch("getInboxTask");
+                    if (window.location.href.indexOf("task/inbox") > -1) {
+                        context.dispatch("getInboxTask");
+                    } else {
+                        context.dispatch("getCompletedTask");
+                    }
                     $("#exampleModal").modal("hide");
                     $("#task_file").val("");
                     window.Toast.fire({

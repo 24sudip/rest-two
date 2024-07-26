@@ -36,6 +36,7 @@
                                     <th>End Date</th>
                                     <th>Description</th>
                                     <th>Assign To</th>
+                                    <th>Status</th>
                                     <th v-if="current_permissions.has('tasks-update') ||
                                     current_permissions.has('tasks-delete')">Actions</th>
                                 </tr>
@@ -55,6 +56,11 @@
                                         {{ task.description.length <= 10 ? task.description : task.description.substring(0,10) + '...' }}
                                     </td>
                                     <td>{{ task.users.length }} Staff Members</td>
+                                    <td>
+                                        <p v-if="task.progress == 0" class="text-danger">No Progress</p>
+                                        <p v-if="task.progress > 0 && task.progress < 100" class="text-warning">Under Progress</p>
+                                        <p v-if="task.progress == 100" class="text-success">Completed</p>
+                                    </td>
                                     <td v-if="current_permissions.has('tasks-update') ||
                                     current_permissions.has('tasks-delete')">
                                         <button class="btn btn-info mx-1" @click="showTask(task)">
