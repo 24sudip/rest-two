@@ -37,6 +37,7 @@
                                     <th>Description</th>
                                     <th>Assign To</th>
                                     <th>Status</th>
+                                    <th v-if="current_permissions.has('subs-read')">Sub Tasks</th>
                                     <th v-if="page_type == 'inbox' ? current_permissions.has('inbox-update')
                                     : current_permissions.has('completed-update')
                                     ">Actions</th>
@@ -62,6 +63,11 @@
                                         <p v-if="task.progress > 0 && task.progress < 100" class="text-warning">Under Progress</p>
                                         <p v-if="task.progress == 100" class="text-success">Completed</p>
                                     </td>
+                                    <td v-if="current_permissions.has('subs-read')">
+                                        <button class="btn btn-secondary mx-1" @click="subTask(task)">
+                                            <i class="fa fa-tasks"></i>
+                                        </button>
+                                    </td>
                                     <td v-if="page_type == 'inbox' ? current_permissions.has('inbox-update')
                                     : current_permissions.has('completed-update')">
                                         <button class="btn btn-success mx-1" @click="performTask(task)">
@@ -86,13 +92,16 @@
                         <div class="modal-dialog modal-xl modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel" v-if="!subTaskMode">
                                         {{ !editMode ? 'Create Task' : 'Perform Task' }}
+                                    </h1>
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel" v-if="subTaskMode">
+                                        Sub Tasks
                                     </h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="row my-2">
+                                    <div class="row my-2" v-if="!subTaskMode">
                                         <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-header bg-light">
@@ -104,7 +113,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row my-2" v-if="performMode">
+                                    <div class="row my-2" v-if="performMode && !subTaskMode">
                                         <div class="col-md-12">
                                             <div class="card">
                                                 <div class="card-header bg-light">
@@ -150,7 +159,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="row">
+                                    <div class="row" v-if="subTaskMode">
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="title">Title</label>
@@ -183,7 +192,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row" v-if="subTaskMode">
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="description">Description</label>
@@ -192,7 +201,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row" v-if="subTaskMode">
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="assign_to">Assign To</label>
@@ -200,11 +209,41 @@
                                                 <div class="text-danger" v-if="taskData.errors.has('assign_to')" v-html="taskData.errors.get('assign_to')" />
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
+                                    <div class="row" v-if="subTaskMode">
+                                        <div class="col-md-12 text-right">
+                                            <button class="btn btn-success" @click="storeSubTask">Create Sub Task</button>
+                                        </div>
+                                    </div>
+                                    <div class="row" v-if="subTaskMode">
+                                        <div class="col-md-12">
+                                            <div class="card mt-3">
+                                                <div class="card-header">
+                                                    <h5>Sub Tasks List</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                                                        <div class="accordion-item" v-for="(sub_task, index) in allSubTask" :key="index">
+                                                            <h2 class="accordion-header" :id="`flush-heading${index}`">
+                                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="`#flush-collapse${index}`" aria-expanded="false" :aria-controls="`flush-collapse${index}`">
+                                                                {{ index + 1 + ' - ' + sub_task.title}}
+                                                            </button>
+                                                            </h2>
+                                                            <div :id="`flush-collapse${index}`" class="accordion-collapse collapse" :aria-labelledby="`flush-heading${index}`" data-bs-parent="#accordionFlushExample">
+                                                                <div class="accordion-body">
+                                                                    <Show :taskInfo="sub_task" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" @click="storePerformTask" class="btn btn-success">
+                                    <button type="button" @click="storePerformTask" class="btn btn-success" v-if="!subTaskMode">
                                         Save Changes
                                     </button>
                                 </div>
@@ -228,6 +267,10 @@
             this.$store.dispatch('getCompletedTask');
             this.$store.dispatch('getAuthRolesAndPermissions');
 
+            if (this.current_permissions.has('subs-create')) {
+                this.$store.dispatch('getAllUser');
+            }
+
             if (window.location.href.indexOf("task/inbox") > -1) {
                 this.page_type = 'inbox';
             } else {
@@ -247,6 +290,9 @@
             completed_tasks() {
                 return this.$store.getters.completed_tasks;
             },
+            filtered_users() {
+                return this.$store.getters.filtered_users;
+            },
             current_roles() {
                 return this.$store.getters.current_roles;
             },
@@ -259,6 +305,7 @@
                 page_type: '',
                 editMode: false,
                 performMode: false,
+                subTaskMode: false,
                 taskInfo: {},
                 performTaskData: {
                     id: '',
@@ -269,6 +316,7 @@
                 },
                 taskData: new Form ({
                     id: '',
+                    parent_id: '',
                     title: '',
                     priority: '',
                     start_date: '',
@@ -280,6 +328,7 @@
                     search_type: 'name',
                     search_value: '',
                 },
+                allSubTask: {},
             }
         },
         methods: {
@@ -294,10 +343,27 @@
                     }
                 }
             },
+            subTask(task) {
+                this.editMode = false;
+                this.performMode = false;
+                this.subTaskMode = true;
+
+                this.taskData.reset();
+                this.taskData.clear();
+                this.taskData.parent_id = task.id;
+
+                this.allSubTask = task.sub_tasks;
+                $('#exampleModal').modal('show');
+            },
+            storeSubTask() {
+                this.$store.dispatch('storeTask', this.taskData);
+            },
             performTask(task) {
                 this.editMode = true;
                 this.performMode = true;
                 this.taskInfo = task;
+
+                this.subTaskMode = false;
 
                 this.performTaskData.result = task.result;
                 this.performTaskData.progress = task.progress;
