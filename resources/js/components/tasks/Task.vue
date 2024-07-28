@@ -13,7 +13,8 @@
                             <div class="form-group">
                                 <label for="search_type">Search Type</label>
                                 <select name="search_type" class="form-control" v-model="searchData.search_type">
-                                    <option value="name">Name</option>
+                                    <option value="title">Title | Priority | Dates</option>
+                                    <option value="users">Assigned To</option>
                                 </select>
                             </div>
                         </div>
@@ -21,7 +22,7 @@
                             <div class="form-group">
                                 <label for="search_value">Search Value</label>
                                 <input type="text" class="form-control" name="search_value"
-                                v-model="searchData.search_value" @keyup="searchDepartment">
+                                v-model="searchData.search_value" @keyup="searchTask">
                             </div>
                         </div>
                     </div>
@@ -213,12 +214,15 @@
                     assign_to: [],
                 }),
                 searchData: {
-                    search_type: 'name',
+                    search_type: 'title',
                     search_value: '',
                 },
             }
         },
         methods: {
+            searchTask() {
+                this.$store.dispatch('searchTask', this.searchData);
+            },
             getResult(link) {
                 if (!link.url || link.active) {
                     return;

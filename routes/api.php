@@ -44,12 +44,15 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
     });
 
     Route::controller(TaskController::class)->group(function () {
+        Route::get('searchTask', 'searchTask')->middleware('permission:tasks-read');
         Route::get('getTask', 'getTask')->middleware('permission:tasks-read');
         Route::post('storeTask', 'storeTask')->middleware('permission:tasks-create');
         Route::post('updateTask/{id}', 'updateTask')->middleware('permission:tasks-update');
         Route::post('deleteTask/{id}', 'deleteTask')->middleware('permission:tasks-delete');
 
+        Route::get('searchInbox', 'searchInbox')->middleware('permission:inbox-read');
         Route::get('getInboxTask', 'getInboxTask')->middleware('permission:inbox-read');
+        Route::get('searchCompleted', 'searchCompleted')->middleware('permission:completed-read');
         Route::get('getCompletedTask', 'getCompletedTask')->middleware('permission:completed-read');
         Route::post('storePerformTask', 'storePerformTask')->middleware('permission:inbox-update');
     });

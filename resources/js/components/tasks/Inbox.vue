@@ -13,7 +13,7 @@
                             <div class="form-group">
                                 <label for="search_type">Search Type</label>
                                 <select name="search_type" class="form-control" v-model="searchData.search_type">
-                                    <option value="name">Name</option>
+                                    <option value="title">Title | Priority | Dates</option>
                                 </select>
                             </div>
                         </div>
@@ -21,7 +21,7 @@
                             <div class="form-group">
                                 <label for="search_value">Search Value</label>
                                 <input type="text" class="form-control" name="search_value"
-                                v-model="searchData.search_value" @keyup="searchDepartment">
+                                v-model="searchData.search_value" @keyup="page_type == 'inbox' ? searchInbox() : searchCompleted()">
                             </div>
                         </div>
                     </div>
@@ -212,7 +212,12 @@
                                     </div>
                                     <div class="row" v-if="subTaskMode">
                                         <div class="col-md-12 text-right">
-                                            <button class="btn btn-success" @click="storeSubTask">Create Sub Task</button>
+                                            <button class="btn btn-danger mx-2" v-if="subEditMode" @click="cancelSubTaskEdit">
+                                                Cancel
+                                            </button>
+                                            <button class="btn btn-success" @click="!subEditMode ? storeSubTask() : updateSubTask()">
+                                                {{ !subEditMode ? 'Create Sub Task' : 'Save Changes' }}
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="row" v-if="subTaskMode">
@@ -231,6 +236,18 @@
                                                             </h2>
                                                             <div :id="`flush-collapse${index}`" class="accordion-collapse collapse" :aria-labelledby="`flush-heading${index}`" data-bs-parent="#accordionFlushExample">
                                                                 <div class="accordion-body">
+                                                                    <div class="row mb-3">
+                                                                        <div class="col-md-12">
+                                                                            <a href="#" class="btn btn-success btn-sm me-2"
+                                                                            @click.prevent="editSubTask(sub_task)">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </a>
+                                                                            <a href="#" class="btn btn-danger btn-sm me-2"
+                                                                            @click.prevent="deleteSubTask(sub_task)">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
                                                                     <Show :taskInfo="sub_task" />
                                                                 </div>
                                                             </div>
@@ -306,6 +323,7 @@
                 editMode: false,
                 performMode: false,
                 subTaskMode: false,
+                subEditMode: false,
                 taskInfo: {},
                 performTaskData: {
                     id: '',
@@ -325,13 +343,19 @@
                     assign_to: [],
                 }),
                 searchData: {
-                    search_type: 'name',
+                    search_type: 'title',
                     search_value: '',
                 },
                 allSubTask: {},
             }
         },
         methods: {
+            searchInbox() {
+                this.$store.dispatch('searchInbox', this.searchData);
+            },
+            searchCompleted() {
+                this.$store.dispatch('searchCompleted', this.searchData);
+            },
             getResult(link) {
                 if (!link.url || link.active) {
                     return;
@@ -347,6 +371,7 @@
                 this.editMode = false;
                 this.performMode = false;
                 this.subTaskMode = true;
+                this.subEditMode = false;
 
                 this.taskData.reset();
                 this.taskData.clear();
@@ -355,16 +380,61 @@
                 this.allSubTask = task.sub_tasks;
                 $('#exampleModal').modal('show');
             },
+            cancelSubTaskEdit() {
+                this.subEditMode = false;
+                this.taskData.reset();
+                this.taskData.clear();
+            },
+            editSubTask(sub_task) {
+                this.editMode = false;
+                this.performMode = false;
+                this.subTaskMode = true;
+                this.subEditMode = true;
+
+                this.taskData.reset();
+                this.taskData.clear();
+
+                this.taskData.id = sub_task.id;
+                this.taskData.parent_id = sub_task.parent_id;
+                this.taskData.title = sub_task.title;
+                this.taskData.priority = sub_task.priority;
+                this.taskData.start_date = sub_task.start_date;
+                this.taskData.end_date = sub_task.end_date;
+                this.taskData.description = sub_task.description;
+
+                sub_task.users.forEach(user => {
+                    this.taskData.assign_to.push(user.id);
+                });
+            },
+            updateSubTask() {
+                this.$store.dispatch('updateTask', this.taskData);
+            },
+            deleteSubTask(sub_task) {
+                Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.$store.dispatch('deleteTask', sub_task);
+                    }
+                });
+            },
             storeSubTask() {
                 this.$store.dispatch('storeTask', this.taskData);
             },
             performTask(task) {
                 this.editMode = true;
                 this.performMode = true;
-                this.taskInfo = task;
 
                 this.subTaskMode = false;
+                this.subEditMode = false;
 
+                this.taskInfo = task;
                 this.performTaskData.result = task.result;
                 this.performTaskData.progress = task.progress;
                 $('#exampleModal').modal('show');

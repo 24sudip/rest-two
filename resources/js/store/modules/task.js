@@ -87,20 +87,20 @@ export default {
         },
     },
     actions: {
-        // searchDepartment: (context, searchData) => {
-        //     setTimeout(function () {
-        //         axios
-        //             .get(
-        //                 `${window.url}api/searchDepartment?${searchData.search_type}=${searchData.search_value}`
-        //             )
-        //             .then((response) => {
-        //                 context.commit("set_department", response.data);
-        //             })
-        //             .catch((err) => {
-        //                 console.log(err);
-        //             });
-        //     });
-        // },
+        searchTask: (context, searchData) => {
+            setTimeout(function () {
+                axios
+                    .get(
+                        `${window.url}api/searchTask?${searchData.search_type}=${searchData.search_value}`
+                    )
+                    .then((response) => {
+                        context.commit("set_tasks", response.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            });
+        },
         getTaskResult: (context, link) => {
             axios.get(link.url).then((response) => {
                 context.commit("set_tasks", response.data);
@@ -121,9 +121,37 @@ export default {
                 context.commit("set_tasks", response.data);
             });
         },
+        searchInbox: (context, searchData) => {
+            setTimeout(function () {
+                axios
+                    .get(
+                        `${window.url}api/searchInbox?${searchData.search_type}=${searchData.search_value}`
+                    )
+                    .then((response) => {
+                        context.commit("set_inbox_tasks", response.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            });
+        },
         getInboxTask: (context) => {
             axios.get(`${window.url}api/getInboxTask`).then((response) => {
                 context.commit("set_inbox_tasks", response.data);
+            });
+        },
+        searchCompleted: (context, searchData) => {
+            setTimeout(function () {
+                axios
+                    .get(
+                        `${window.url}api/searchCompleted?${searchData.search_type}=${searchData.search_value}`
+                    )
+                    .then((response) => {
+                        context.commit("set_completed_tasks", response.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             });
         },
         getCompletedTask: (context) => {
@@ -170,7 +198,11 @@ export default {
             taskData
                 .post(window.url + "api/updateTask/" + taskData.id)
                 .then((response) => {
-                    context.dispatch("getTask");
+                    if (window.location.href.indexOf("task/index") > -1) {
+                        context.dispatch("getTask");
+                    } else {
+                        context.dispatch("getInboxTask");
+                    }
                     $("#exampleModal").modal("hide");
                     window.Toast.fire({
                         icon: "success",
@@ -182,7 +214,12 @@ export default {
             axios
                 .post(window.url + "api/deleteTask/" + taskData.id)
                 .then(() => {
-                    context.dispatch("getTask");
+                    if (window.location.href.indexOf("task/index") > -1) {
+                        context.dispatch("getTask");
+                    } else {
+                        context.dispatch("getInboxTask");
+                        $("#exampleModal").modal("hide");
+                    }
                     window.Toast.fire({
                         icon: "success",
                         title: "Task Deleted Successfully",
