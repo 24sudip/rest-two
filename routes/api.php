@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{DepartmentController, ApiController, UserController, TaskController};
+use App\Http\Controllers\{DepartmentController, ApiController, UserController, TaskController, CommentController};
 
 /*
 |--------------------------------------------------------------------------
@@ -55,5 +55,8 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
         Route::get('searchCompleted', 'searchCompleted')->middleware('permission:completed-read');
         Route::get('getCompletedTask', 'getCompletedTask')->middleware('permission:completed-read');
         Route::post('storePerformTask', 'storePerformTask')->middleware('permission:inbox-update');
+    });
+    Route::controller(CommentController::class)->group(function () {
+        Route::post('storeComment', 'storeComment')->middleware('permission:comments-create');
     });
 });

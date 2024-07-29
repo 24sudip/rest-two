@@ -39,4 +39,9 @@ class Task extends Model
     {
         return $this->hasMany('App\Models\Task', 'parent_id')->with('users')->with('performed_by_user');
     }
+
+    public function comments()
+    {
+        return $this->hasMany('App\Models\Comment');
+    }
 }

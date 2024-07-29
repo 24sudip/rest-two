@@ -5,6 +5,7 @@ import apidataModule from "./modules/apidata";
 import departmentModule from "./modules/department";
 import userModule from "./modules/user";
 import taskModule from "./modules/task";
+import commentModule from "./modules/comment";
 
 export const store = createStore({
     strict: true,
@@ -13,6 +14,7 @@ export const store = createStore({
         apidataModule,
         userModule,
         taskModule,
+        commentModule,
     },
     state: {
         // test: 0,

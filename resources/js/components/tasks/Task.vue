@@ -38,6 +38,7 @@
                                     <th>Description</th>
                                     <th>Assign To</th>
                                     <th>Status</th>
+                                    <th v-if="current_permissions.has('comments-read')">Comments</th>
                                     <th v-if="current_permissions.has('tasks-update') ||
                                     current_permissions.has('tasks-delete')">Actions</th>
                                 </tr>
@@ -61,6 +62,11 @@
                                         <p v-if="task.progress == 0" class="text-danger">No Progress</p>
                                         <p v-if="task.progress > 0 && task.progress < 100" class="text-warning">Under Progress</p>
                                         <p v-if="task.progress == 100" class="text-success">Completed</p>
+                                    </td>
+                                    <td v-if="current_permissions.has('comments-read')">
+                                        <button type="button" class="btn btn-secondary" @click="showComment(task)">
+                                            <i class="fa fa-comment"></i>
+                                        </button>
                                     </td>
                                     <td v-if="current_permissions.has('tasks-update') ||
                                     current_permissions.has('tasks-delete')">
@@ -165,6 +171,7 @@
                             </div>
                         </div>
                     </div>
+                    <Comment :taskInfo="taskInfo" />
                 </div>
             </div>
         </div>
@@ -173,9 +180,11 @@
 
 <script>
     import Show from './Show.vue';
+    import Comment from './Comment.vue';
     export default {
         components: {
             Show,
+            Comment,
         },
         mounted() {
             this.$store.dispatch('getTask');
@@ -229,6 +238,10 @@
                 } else {
                     this.$store.dispatch('getTaskResult', link);
                 }
+            },
+            showComment(task) {
+                this.taskInfo = task;
+                $('#commentModal').modal('show');
             },
             showTask(task) {
                 this.showMode = true;
