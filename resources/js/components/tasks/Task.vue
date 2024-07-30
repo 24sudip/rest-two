@@ -171,7 +171,7 @@
                             </div>
                         </div>
                     </div>
-                    <Comment :taskInfo="taskInfo" />
+                    <Comment :taskInfo="taskInfo" :comments="comments" />
                 </div>
             </div>
         </div>
@@ -197,6 +197,9 @@
             },
             tasks() {
                 return this.$store.getters.tasks;
+            },
+            comments() {
+                return this.$store.getters.comments;
             },
             filtered_users() {
                 return this.$store.getters.filtered_users;
@@ -241,6 +244,8 @@
             },
             showComment(task) {
                 this.taskInfo = task;
+                window.emitter.emit("resetCommentData");
+                this.$store.dispatch('getComment', {taskData: task});
                 $('#commentModal').modal('show');
             },
             showTask(task) {

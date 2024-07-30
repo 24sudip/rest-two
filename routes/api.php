@@ -56,7 +56,11 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
         Route::get('getCompletedTask', 'getCompletedTask')->middleware('permission:completed-read');
         Route::post('storePerformTask', 'storePerformTask')->middleware('permission:inbox-update');
     });
+
     Route::controller(CommentController::class)->group(function () {
+        Route::get('getComment/{id}', 'getComment')->middleware('permission:comments-read');
         Route::post('storeComment', 'storeComment')->middleware('permission:comments-create');
+        Route::post('updateComment/{id}', 'updateComment')->middleware('permission:comments-update');
+        Route::post('deleteComment/{id}', 'deleteComment')->middleware('permission:comments-delete');
     });
 });

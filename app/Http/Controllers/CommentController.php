@@ -7,6 +7,10 @@ use App\Models\Comment;
 
 class CommentController extends Controller
 {
+    public function getComment($id) {
+        return response()->json(Comment::where('task_id', $id)->with('user')->latest()->get());
+    }
+
     public function storeComment(Request $request) {
         $request->validate([
             'comment'=>['required']
@@ -17,5 +21,19 @@ class CommentController extends Controller
             'comment'=>$request->comment,
         ]);
         return response()->json('success');
+    }
+
+    public function updateComment(Request $request, $id) {
+        $request->validate([
+            'comment'=>['required']
+        ]);
+        Comment::where('id', $id)->update([
+            'comment'=>$request->comment,
+        ]);
+        return response()->json('success');
+    }
+
+    public function deleteComment($id) {
+        return response()->json(Comment::where('id', $id)->delete());
     }
 }
