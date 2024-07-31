@@ -1,0 +1,71 @@
+<template>
+    <div class="dropdown mx-2">
+        <a href="#" class="text-secondary" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-bell" id="notification-icon"></i>
+            <span id="notification-count" v-if="unread_notifications.length > 0">{{ unread_notifications.length }}</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li v-for="(unread, index) in unread_notifications" :key="index">
+                <a class="dropdown-item" href="#" @click.prevent="markNotificationAsRead(unread)">
+                    {{ unread.data.message }} - {{ unread.data.title }}
+                    <p>{{ $filters.myDate(unread.created_at) }}</p>
+                </a>
+            </li>
+            <li v-if="unread_notifications.length == 0">
+                <a class="dropdown-item" href="#">
+                    No New Notification
+                </a>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
+    export default {
+        computed: {
+            unread_notifications() {
+                return this.$store.getters.unread_notifications;
+            },
+        },
+        mounted() {
+            this.$store.dispatch('getUnreadNotification');
+        },
+        methods: {
+            markNotificationAsRead(unread) {
+                Swal.fire({
+                title: "Are you sure?",
+                text: "You want to mark notification as read!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Mark it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.$store.dispatch('markNotificationAsRead', unread);
+                    }
+                });
+            },
+        },
+    }
+</script>
+
+<style scoped>
+    #notification-icon {
+        line-height: 30px;
+        font-size: 25px;
+    }
+    #notification-count {
+        text-align: center;
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        min-width: 18px;
+        min-height: 19px;
+        border-radius: 50%;
+        background-color: red;
+        color: #fff;
+        line-height: 19px;
+        font-family: sans-serif;
+    }
+</style>

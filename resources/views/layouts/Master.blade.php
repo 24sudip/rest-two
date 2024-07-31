@@ -100,6 +100,8 @@
                             Account: {{ Auth::user()->name }}
                         </span>
 
+                        <notification-component></notification-component>
+
                         <button class="btn btn-dark d-inline-block d-lg-none ml-auto" id="navbarCollapse">
                             <i class="fa fa-bars"></i>
                         </button>

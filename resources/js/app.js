@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import { store } from './store/store';
 
 import LogoutComponent from "./components/auth/LogoutComponent.vue";
+import NotificationComponent from "./components/NotificationComponent.vue";
 import Department from './components/Department.vue';
 import PermissionCreate from './components/permissions/PermissionCreate.vue';
 import User from './components/users/User.vue';
@@ -12,6 +13,8 @@ import Inbox from "./components/tasks/Inbox.vue";
 
 import Form from "vform";
 window.Form = Form;
+
+import moment from "moment";
 
 var Emitter = require("tiny-emitter");
 window.emitter = new Emitter();
@@ -39,11 +42,18 @@ const app = createApp({});
 
 app.component("multi-select", Multiselect);
 app.component("logout-component", LogoutComponent);
+app.component("notification-component", NotificationComponent);
 app.component("Department", Department);
 app.component('permission-create', PermissionCreate);
 app.component("User", User);
 app.component("Task", Task);
 app.component("Inbox", Inbox);
+
+app.config.globalProperties.$filters = {
+    myDate(date) {
+        return moment(date).startOf("hour").fromNow();
+    }
+};
 
 window.url = '/';
 

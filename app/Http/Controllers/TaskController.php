@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Task;
+use App\Models\{Task, User};
+use App\Notifications\TaskNotification;
 
 class TaskController extends Controller
 {
@@ -64,8 +65,14 @@ class TaskController extends Controller
             'description'=>$request->description,
         ]);
         $task->users()->sync($request->assign_to);
+        $message = 'New Task';
+        foreach ($request->assign_to as $user_id) {
+            $userToNotify = User::findOrFail($user_id);
+            $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+        }
         return response()->json('success');
     }
+    
     public function updateTask(Request $request, $id) {
         $request->validate([
             'title'=>['required'],

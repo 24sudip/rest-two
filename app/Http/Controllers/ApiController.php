@@ -7,6 +7,16 @@ use App\Models\{Department, Role, Permission, User};
 
 class ApiController extends Controller
 {
+    public function getUnreadNotification() {
+        return response()->json(auth('api')->user()->unreadNotifications);
+    }
+
+    public function markNotificationAsRead() {
+        $id = \Request::get('unread');
+        auth('api')->user()->notifications->where('id', $id)->markAsRead();
+        return response()->json('success');
+    }
+
     public function getAllDepartment() {
         return response()->json(Department::all());
     }

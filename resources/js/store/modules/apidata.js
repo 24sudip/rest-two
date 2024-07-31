@@ -3,6 +3,7 @@ import axios from "axios";
 
 export default {
     state: {
+        unread_notifications: {},
         filtered_department: [],
         filtered_roles: [],
         filtered_permission_categories: [],
@@ -13,6 +14,9 @@ export default {
     getters: {
         filtered_department(state) {
             return state.filtered_department;
+        },
+        unread_notifications(state) {
+            return state.unread_notifications;
         },
         filtered_roles(state) {
             return state.filtered_roles;
@@ -28,6 +32,9 @@ export default {
         },
     },
     mutations: {
+        set_unread_notifications: (state, data) => {
+            state.unread_notifications = data;
+        },
         set_all_department: (state, data) => {
             state.filtered_department = [];
             data.forEach((department) =>
@@ -73,7 +80,7 @@ export default {
         },
         set_all_users: (state, data) => {
             state.filtered_users = [];
-            data.forEach(user => {
+            data.forEach((user) => {
                 if (
                     user.department_id === window.auth_user.department_id &&
                     user.id !== window.auth_user.id &&
@@ -82,41 +89,30 @@ export default {
                 ) {
                     state.filtered_users.push({
                         value: user.id,
-                        label: user.name
+                        label: user.name,
                     });
                 }
             });
-            // window.auth_roles.map(role => {
-            //     if (role.name === "director") {
-            //         data.forEach(user => {
-            //             if (
-            //                 user.department_id === window.auth_user.department_id &&
-            //                 user.id !== window.auth_user.id
-            //             ) {
-
-            //             }
-            //         });
-            //     }
-            //     if (role.name === "manager") {
-            //         data.forEach((user) => {
-            //             user.roles.map(role => {
-            //                 if (
-            //                     user.department_id === window.auth_user.department_id &&
-            //                     user.id !== window.auth_user.id &&
-            //                     role.name !== "director"
-            //                 ) {
-            //                     state.filtered_users.push({
-            //                         value: user.id,
-            //                         label: user.name,
-            //                     });
-            //                 }
-            //             });
-            //         });
-            //     }
-            // });
         },
     },
     actions: {
+        getUnreadNotification: (context) => {
+            axios.get(`${window.url}api/getUnreadNotification`)
+            .then((response) => {
+                context.commit("set_unread_notifications", response.data);
+            });
+        },
+        markNotificationAsRead: (context, unreadData) => {
+            axios
+                .get(`${window.url}api/markNotificationAsRead?unread=${unreadData.id}`)
+                .then((response) => {
+                    context.dispatch("getUnreadNotification");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Notification Marked As Read!",
+                    });
+                });
+        },
         getAllDepartment: (context) => {
             axios.get(`${window.url}api/getAllDepartment`).then((response) => {
                 context.commit("set_all_department", response.data);
