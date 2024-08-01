@@ -30,7 +30,9 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
 
     Route::controller(ApiController::class)->group(function () {
         Route::get('getUnreadNotification', 'getUnreadNotification');
+        Route::get('getAllNotification', 'getAllNotification');
         Route::get('markNotificationAsRead', 'markNotificationAsRead');
+        Route::get('clearAllNotification', 'clearAllNotification');
         Route::get('getAllDepartment', 'getAllDepartment')->middleware('permission:departments-read');
         Route::get('getAllRoles', 'getAllRoles')->middleware('permission:roles-read');
         Route::get('getAllPermissions', 'getAllPermissions')->middleware('permission:permissions-read');
