@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\{Task, User};
 use App\Notifications\TaskNotification;
+use App\Notifications\TaskEmailNotification;
+use Notification;
 
 class TaskController extends Controller
 {
@@ -69,6 +71,7 @@ class TaskController extends Controller
         foreach ($request->assign_to as $user_id) {
             $userToNotify = User::findOrFail($user_id);
             $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+            Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
         }
         return response()->json('success');
     }
@@ -95,6 +98,7 @@ class TaskController extends Controller
         foreach ($request->assign_to as $user_id) {
             $userToNotify = User::findOrFail($user_id);
             $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+            Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
         }
         return response()->json('success');
     }
@@ -167,6 +171,7 @@ class TaskController extends Controller
 
         $userToNotify = User::findOrFail($task->user_id);
         $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+        Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
         return response()->json('success');
     }
 

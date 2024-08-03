@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{Comment, Task, User};
-use App\Notifications\TaskNotification;
+use App\Notifications\{TaskNotification, TaskEmailNotification};
+use Notification;
 
 class CommentController extends Controller
 {
@@ -33,6 +34,7 @@ class CommentController extends Controller
             if (auth('api')->user()->id != $user_id) {
                 $userToNotify = User::findOrFail($user_id);
                 $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+                Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
         return response()->json('success');
@@ -57,6 +59,7 @@ class CommentController extends Controller
             if (auth('api')->user()->id != $user_id) {
                 $userToNotify = User::findOrFail($user_id);
                 $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
+                Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
         return response()->json('success');
