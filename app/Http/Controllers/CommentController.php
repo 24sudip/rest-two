@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\{Comment, Task, User};
 use App\Notifications\{TaskNotification, TaskEmailNotification};
 use Notification;
+use App\Events\CommentEvent;
 
 class CommentController extends Controller
 {
@@ -37,6 +38,7 @@ class CommentController extends Controller
                 Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
+        broadcast(new CommentEvent($task))->toOthers();
         return response()->json('success');
     }
 
@@ -62,10 +64,14 @@ class CommentController extends Controller
                 Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
+        broadcast(new CommentEvent($task))->toOthers();
         return response()->json('success');
     }
 
     public function deleteComment($id) {
+        $comment = Comment::findOrFail($id);
+        $task = Task::findOrFail($comment->task_id);
+        broadcast(new CommentEvent($task))->toOthers();
         return response()->json(Comment::where('id', $id)->delete());
     }
 }

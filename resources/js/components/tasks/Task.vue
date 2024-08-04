@@ -181,6 +181,7 @@
 <script>
     import Show from './Show.vue';
     import Comment from './Comment.vue';
+    import Echo from 'laravel-echo';
     export default {
         components: {
             Show,
@@ -232,6 +233,11 @@
             }
         },
         methods: {
+            listenToComments(task) {
+                window.Echo.channel(`task.${task.id}`).listen('CommentEvent', () => {
+                    this.$store.dispatch('getComment', {taskData: task});
+                });
+            },
             searchTask() {
                 this.$store.dispatch('searchTask', this.searchData);
             },
@@ -246,6 +252,7 @@
                 this.taskInfo = task;
                 window.emitter.emit("resetCommentData");
                 this.$store.dispatch('getComment', {taskData: task});
+                this.listenToComments(task);
                 $('#commentModal').modal('show');
             },
             showTask(task) {
