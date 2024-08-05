@@ -7,6 +7,7 @@ use App\Models\{Task, User};
 use App\Notifications\TaskNotification;
 use App\Notifications\TaskEmailNotification;
 use Notification;
+use App\Events\NotificationEvent;
 
 class TaskController extends Controller
 {
@@ -73,6 +74,7 @@ class TaskController extends Controller
             $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
             Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
         }
+        broadcast(new NotificationEvent())->toOthers();
         return response()->json('success');
     }
 
@@ -100,6 +102,7 @@ class TaskController extends Controller
             $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
             Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
         }
+        broadcast(new NotificationEvent())->toOthers();
         return response()->json('success');
     }
 
@@ -172,6 +175,7 @@ class TaskController extends Controller
         $userToNotify = User::findOrFail($task->user_id);
         $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
         Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
+        broadcast(new NotificationEvent())->toOthers();
         return response()->json('success');
     }
 

@@ -20,3 +20,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('task.{id}', function () {
     return true;
 }, ['guards'=>['web', 'api']]);
+
+Broadcast::channel('notification', function () {
+    return true;
+}, ['guards'=>['web', 'api']]);
+

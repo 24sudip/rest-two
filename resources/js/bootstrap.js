@@ -44,12 +44,14 @@ window.Echo = new Echo({
     // import.meta.env.VITE_PUSHER_APP_KEY,
     cluster: "mt1",
     // import.meta.env.VITE_PUSHER_APP_CLUSTER ?? "mt1",
+    wsHost: window.location.hostname,
     // wsHost: import.meta.env.VITE_PUSHER_HOST
     //     ? import.meta.env.VITE_PUSHER_HOST
     //     : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+    wsPort: 6001,
     // wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
     // wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-    encrypted: true,
+    // encrypted: true,
     forceTLS: false,
     // (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
     // enabledTransports: ["ws", "wss"],

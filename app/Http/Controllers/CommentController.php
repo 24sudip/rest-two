@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\{Comment, Task, User};
 use App\Notifications\{TaskNotification, TaskEmailNotification};
 use Notification;
-use App\Events\CommentEvent;
+use App\Events\{CommentEvent, NotificationEvent};
 
 class CommentController extends Controller
 {
@@ -39,6 +39,7 @@ class CommentController extends Controller
             }
         }
         broadcast(new CommentEvent($task))->toOthers();
+        broadcast(new NotificationEvent())->toOthers();
         return response()->json('success');
     }
 
@@ -65,6 +66,7 @@ class CommentController extends Controller
             }
         }
         broadcast(new CommentEvent($task))->toOthers();
+        broadcast(new NotificationEvent())->toOthers();
         return response()->json('success');
     }
 

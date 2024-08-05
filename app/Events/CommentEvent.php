@@ -23,6 +23,7 @@ class CommentEvent implements ShouldBroadcastNow
     public function __construct($task)
     {
         $this->task = $task;
+        $this->dontBroadcastToCurrentUser();
     }
 
     /**
