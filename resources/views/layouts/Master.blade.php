@@ -17,10 +17,13 @@
 		<div class="wrapper d-flex align-items-stretch" id="app">
 			<nav id="sidebar">
 				<div class="p-4 pt-5">
-		  		    <a href="#">
+		  		    <a href="{{ route('dashboard') }}">
                         <img class="img logo mb-5" src="{{ asset('images/018 20-task-logo.png') }}" alt="logo">
                     </a>
                     <ul class="list-unstyled components mb-5">
+                        <li class="{{ Request::is('dashboard') ? 'active' : ''}}">
+                            <a href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
                         @can('admin')
                         <li class="{{ Request::is('department/index','user/index','role/index','permission/index') ? 'active' : ''}}">
                             <a href="#homeSubmenu" data-bs-toggle="collapse" role="button" aria-expanded="{{ Request::is('department/index','user/index','role/index','permission/index') ? 'true' : 'false'}}" aria-controls="homeSubmenu">
