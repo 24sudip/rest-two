@@ -3,6 +3,8 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { store } from './store/store';
 
+import DashboardComponent from "./components/DashboardComponent.vue";
+
 import LogoutComponent from "./components/auth/LogoutComponent.vue";
 import NotificationComponent from "./components/NotificationComponent.vue";
 import Department from './components/Department.vue';
@@ -41,6 +43,8 @@ window.Toast = Toast;
 const app = createApp({});
 
 app.component("multi-select", Multiselect);
+
+app.component("dashboard-component", DashboardComponent);
 app.component("logout-component", LogoutComponent);
 app.component("notification-component", NotificationComponent);
 app.component("Department", Department);

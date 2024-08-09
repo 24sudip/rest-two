@@ -29,6 +29,7 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
     });
 
     Route::controller(ApiController::class)->group(function () {
+        Route::get('getBarChartData/{year}', 'getBarChartData');
         Route::get('getUnreadNotification', 'getUnreadNotification');
         Route::get('getAllNotification', 'getAllNotification');
         Route::get('markNotificationAsRead', 'markNotificationAsRead');
