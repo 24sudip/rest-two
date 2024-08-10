@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{Department, Role, Permission, User, Task};
+use App\Mail\{ContactMail, ReplyMail};
+use Mail;
 
 class ApiController extends Controller
 {
@@ -79,5 +81,21 @@ class ApiController extends Controller
             'other_completed_array'=>$other_completed_array,
             'own_completed_array'=>$own_completed_array,
         ]);
+    }
+
+    public function storeContact(Request $request) {
+        $request->validate([
+            'name'=>['required'],
+            'email'=>['required'],
+            'message'=>['required']
+        ]);
+        $data = array(
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'message'=>$request->message
+        );
+        Mail::to('admin@app.com')->send(new ContactMail($data));
+        Mail::to($data['email'])->send(new ReplyMail($data));
+        return response()->json('success');
     }
 }

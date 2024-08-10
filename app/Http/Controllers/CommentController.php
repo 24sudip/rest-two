@@ -35,7 +35,7 @@ class CommentController extends Controller
             if (auth('api')->user()->id != $user_id) {
                 $userToNotify = User::findOrFail($user_id);
                 $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
-                Notification::queue($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
+                Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
         broadcast(new CommentEvent($task))->toOthers();
@@ -62,7 +62,7 @@ class CommentController extends Controller
             if (auth('api')->user()->id != $user_id) {
                 $userToNotify = User::findOrFail($user_id);
                 $userToNotify->notify(new TaskNotification(auth('api')->user(), $task, $message));
-                Notification::queue($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
+                Notification::send($userToNotify, new TaskEmailNotification(auth('api')->user(), $task, $message));
             }
         }
         broadcast(new CommentEvent($task))->toOthers();

@@ -3,6 +3,8 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { store } from './store/store';
 
+import ContactComponent from "./components/ContactComponent.vue";
+
 import DashboardComponent from "./components/DashboardComponent.vue";
 
 import LogoutComponent from "./components/auth/LogoutComponent.vue";
@@ -44,6 +46,7 @@ const app = createApp({});
 
 app.component("multi-select", Multiselect);
 
+app.component("contact-component", ContactComponent);
 app.component("dashboard-component", DashboardComponent);
 app.component("logout-component", LogoutComponent);
 app.component("notification-component", NotificationComponent);

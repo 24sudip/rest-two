@@ -8,7 +8,7 @@
                             <h5>Tasks</h5>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-control" v-model="year">
+                            <select class="form-control" v-model="year" @change.prevent="getBarChartData">
                                 <option value="2024">2024</option>
                                 <option value="2025">2025</option>
                                 <option value="2026">2026</option>
@@ -36,13 +36,6 @@
             return {
                 year: '2024',
                 myChart: null,
-                chartData: {
-                    labels: [],
-                    datasets: [],
-                },
-                chartOptions: {
-                    responsive: true,
-                },
             }
         },
         computed: {
@@ -61,7 +54,45 @@
         methods: {
             getBarChartData() {
                 axios.get(`${window.url}api/getBarChartData/${this.year}`).then((response) => {
-                    console.log(response.data);
+                    let datasets = [];
+                    if (this.current_permissions.has('tasks-create')) {
+                        datasets.push({
+                            label: `Assigned - Tasks - ${response.data.year}`,
+                            data: response.data.tasks_array,
+                            borderWidth: 2,
+                            borderColor: 'gray',
+                            backgroundColor: 'lightgray'
+                        });
+                    }
+                    if (this.current_permissions.has('tasks-create')) {
+                        datasets.push({
+                            label: `Completed by others - Tasks - ${response.data.year}`,
+                            data: response.data.other_completed_array,
+                            borderWidth: 2,
+                            borderColor: 'blue',
+                            backgroundColor: 'lightblue'
+                        });
+                    }
+                    if (this.current_permissions.has('inbox-update')) {
+                        datasets.push({
+                            label: `Completed on my own - Tasks - ${response.data.year}`,
+                            data: response.data.own_completed_array,
+                            borderWidth: 2,
+                            borderColor: 'green',
+                            backgroundColor: 'lightgreen'
+                        });
+                    }
+                    if (this.myChart) this.myChart.destroy();
+                    this.myChart = new Chart(document.getElementById('tasks-bar-chart').getContext("2d"), {
+                        type: 'bar',
+                        data: {
+                            labels: response.data.months,
+                            datasets: datasets,
+                        },
+                        options: {
+                            responsive: true,
+                        },
+                    });
                 }).catch(err => console.log(err));
             },
         }

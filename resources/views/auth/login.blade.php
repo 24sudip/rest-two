@@ -22,6 +22,7 @@
                             </span>
                             @enderror
                         </div>
+
                         <div class="form-group my-1">
                             <label for="password">Password</label>
                             <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
@@ -32,13 +33,12 @@
                             </span>
                             @enderror
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group my-1">
-                                    <a href="{{ route('password.request') }}">Forgot Password</a>
-                                </div>
-                            </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <a class="text-secondary" href="{{ route('password.request') }}">Forgot Password</a>
+                            <contact-component></contact-component>
                         </div>
+
                         <div class="d-flex justify-content-between mt-3">
                             <button type="submit" class="btn btn-warning">Login</button>
                             <a href="{{ route('register') }}" class="btn btn-dark">Go To Register</a>

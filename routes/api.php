@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('storeContact', [ApiController::class, 'storeContact']);
+
 Route::middleware(['forcetojson','auth:api'])->group(function () {
     Route::controller(DepartmentController::class)->group(function () {
         Route::get('searchDepartment', 'searchDepartment')->middleware('permission:departments-read');

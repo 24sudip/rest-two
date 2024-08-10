@@ -103,6 +103,24 @@ export default {
         },
     },
     actions: {
+        storeContact: (context, contactData) => {
+            window.emitter.emit("emailLoading", true);
+            contactData.post(`${window.url}api/storeContact`)
+            .then((response) => {
+                $("#contactModal").modal("hide");
+                window.Toast.fire({
+                    icon: "success",
+                    title: "Email Sent Successfully!",
+                });
+            }).catch(err => {
+                window.Toast.fire({
+                    icon: "warning",
+                    title: "Email Not Sent, Please Try Again!",
+                });
+            }).finally(() => {
+                window.emitter.emit("emailLoading", false);
+            });
+        },
         getAllNotification: (context) => {
             axios
                 .get(`${window.url}api/getAllNotification`)
@@ -111,20 +129,22 @@ export default {
                 });
         },
         getUnreadNotification: (context) => {
-            axios.get(`${window.url}api/getUnreadNotification`)
-            .then((response) => {
-                context.commit("set_unread_notifications", response.data);
-            });
+            axios
+                .get(`${window.url}api/getUnreadNotification`)
+                .then((response) => {
+                    context.commit("set_unread_notifications", response.data);
+                });
         },
         clearAllNotification: (context) => {
-            axios.get(`${window.url}api/clearAllNotification`)
-            .then((response) => {
-                context.dispatch("getAllNotification");
-                window.Toast.fire({
-                    icon: "success",
-                    title: "All Notifications Cleared Successfully!",
+            axios
+                .get(`${window.url}api/clearAllNotification`)
+                .then((response) => {
+                    context.dispatch("getAllNotification");
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "All Notifications Cleared Successfully!",
+                    });
                 });
-            });
         },
         markNotificationAsRead: (context, unreadData) => {
             axios
