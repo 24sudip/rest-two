@@ -14,6 +14,7 @@ import PermissionCreate from './components/permissions/PermissionCreate.vue';
 import User from './components/users/User.vue';
 import Task from "./components/tasks/Task.vue";
 import Inbox from "./components/tasks/Inbox.vue";
+import Report from "./components/tasks/Report.vue";
 
 import Form from "vform";
 window.Form = Form;
@@ -55,6 +56,7 @@ app.component('permission-create', PermissionCreate);
 app.component("User", User);
 app.component("Task", Task);
 app.component("Inbox", Inbox);
+app.component("Report", Report);
 
 app.config.globalProperties.$filters = {
     myDate(date) {

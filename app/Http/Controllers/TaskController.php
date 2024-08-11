@@ -203,4 +203,8 @@ class TaskController extends Controller
         $tasks = auth('api')->user()->tasks()->where('status','1')->latest()->paginate(1);
         return response()->json($tasks);
     }
+
+    public function TaskReports() {
+        return view('task.Report');
+    }
 }

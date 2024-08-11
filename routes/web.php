@@ -68,5 +68,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/task/index', 'TaskIndex')->name('task.index')->middleware('permission:tasks-read');
         Route::get('/task/inbox', 'TaskInbox')->name('task.inbox')->middleware('permission:inbox-read');
         Route::get('/task/completed', 'TaskCompleted')->name('task.completed')->middleware('permission:completed-read');
+        Route::get('/task/reports', 'TaskReports')->name('task.reports')->middleware('permission:reports-read');
     });
 });
