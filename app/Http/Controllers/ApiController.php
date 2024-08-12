@@ -98,4 +98,35 @@ class ApiController extends Controller
         Mail::to($data['email'])->send(new ReplyMail($data));
         return response()->json('success');
     }
+
+    public function exportExcel(Request $request) {
+        $request->validate([
+            'type'=>'required',
+            'start_date'=>'required',
+            'end_date'=>'required',
+        ]);
+
+        $type = $request->type;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        if ($type == 'assigned') {
+            $tasks = Task::where('user_id', auth('api')->user()->id)->where('parent_id','0')
+            ->whereBetween('created_at', [$start_date, $end_date])->with('users')->with('performed_by_user')->latest()
+            ->get();
+        }
+        if ($type == 'other_completed') {
+            $tasks = Task::where('user_id', auth('api')->user()->id)->where('parent_id','0')->where('status','1')
+            ->whereBetween('created_at', [$start_date, $end_date])->with('users')->with('performed_by_user')->latest()
+            ->get();
+        }
+        if ($type == 'all_inbox') {
+            $tasks = auth('api')->user()->tasks()->whereBetween('created_at', [$start_date, $end_date])->latest()->get();
+        }
+        if ($type == 'completed_inbox') {
+            $tasks = auth('api')->user()->tasks()->whereBetween('created_at', [$start_date, $end_date])
+            ->where('status','1')->latest()->get();
+        }
+        return response()->json($tasks);
+    }
 }

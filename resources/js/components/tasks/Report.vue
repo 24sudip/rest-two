@@ -36,7 +36,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-start mt-3" v-if="current_permissions.has('reports-create') && reportData.type != '#' && reportData.start_date != '' && reportData.end_date != ''">
-                        <button type="button" class="btn btn-success">
+                        <button type="button" class="btn btn-success" @click.prevent="exportExcel">
                             <i class="fa fa-file-excel-o"></i>
                         </button>
                     </div>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+    const xlsx = require('xlsx');
     export default {
         data() {
             return {
@@ -66,6 +67,66 @@
             },
             current_permissions() {
                 return this.$store.getters.current_permissions;
+            },
+        },
+        methods: {
+            exportExcel() {
+                let data = [];
+                this.reportData.post(`${window.url}api/exportExcel`).then(response => {
+                    response.data.forEach(task => {
+                        let assigned_to = task.users.map(user => {
+                            return user.name;
+                        });
+                        let convertToStringUsers = JSON.stringify(assigned_to);
+                        let removeFirstAndLastChar = convertToStringUsers.slice(1, -1);
+                        let status;
+                        if (task.progress == 0) {
+                            status = 'No Progress';
+                        }
+                        if (task.progress > 0 && task.progress < 100) {
+                            status = 'Under Progress';
+                        }
+                        if (task.progress == 100) {
+                            status = 'Completed';
+                        }
+                        data.push({
+                            title: task.title,
+                            priority: task.priority,
+                            start_date: task.start_date,
+                            end_date: task.end_date,
+                            assigned_to: removeFirstAndLastChar,
+                            status: status,
+                        });
+                    });
+                    const XLSX = xlsx;
+                    const workbook = XLSX.utils.book_new();
+                    const worksheet = XLSX.utils.json_to_sheet(data);
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Tasks");
+                    XLSX.utils.sheet_add_aoa(worksheet, [["Title", "Priority", "Start Date", "End Date", "Assigned To", "Status"]], { origin: "A1" });
+
+                    const title_width = data.reduce((w, r) => Math.max(w, r.title.length), 10);
+                    const priority_width = data.reduce((w, r) => Math.max(w, r.priority.length), 10);
+                    const start_date_width = data.reduce((w, r) => Math.max(w, r.start_date.length), 10);
+                    const end_date_width = data.reduce((w, r) => Math.max(w, r.end_date.length), 10);
+                    const assigned_to_width = data.reduce((w, r) => Math.max(w, r.assigned_to.length), 10);
+                    const status_width = data.reduce((w, r) => Math.max(w, r.status.length), 10);
+
+                    worksheet["!cols"] = [
+                        { wch: title_width },
+                        { wch: priority_width },
+                        { wch: start_date_width },
+                        { wch: end_date_width },
+                        { wch: assigned_to_width },
+                        { wch: status_width }
+                    ];
+                    XLSX.writeFile(workbook, "Tasks.xlsx", { compression: true });
+                    window.Toast.fire({
+                        icon: "success",
+                        title: "Excel Exported Successfully!",
+                    });
+                }).catch(err => {
+                    console.log(err);
+                });
             },
         },
     }

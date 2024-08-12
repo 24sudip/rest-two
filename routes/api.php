@@ -31,6 +31,7 @@ Route::middleware(['forcetojson','auth:api'])->group(function () {
     });
 
     Route::controller(ApiController::class)->group(function () {
+        Route::post('exportExcel', 'exportExcel');
         Route::get('getBarChartData/{year}', 'getBarChartData');
         Route::get('getUnreadNotification', 'getUnreadNotification');
         Route::get('getAllNotification', 'getAllNotification');
