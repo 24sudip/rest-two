@@ -49,6 +49,8 @@ class ApiController extends Controller
     }
 
     public function getBarChartData($year) {
+        $user_role = auth('api')->user()->hasRole('admin');
+
         $months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         $numeric_months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
 
@@ -57,20 +59,26 @@ class ApiController extends Controller
         $own_completed_array = [];
 
         foreach ($numeric_months as $nm) {
-            $tasks = Task::where('user_id', auth('api')->user()->id)->whereMonth('created_at','=', $nm)
-            ->whereYear('created_at','=', $year)->get();
+            $tasks = !$user_role ? Task::where('user_id', auth('api')->user()->id)->whereMonth('created_at','=', $nm)
+            ->whereYear('created_at','=', $year)->get()
+            : Task::whereMonth('created_at','=', $nm)->whereYear('created_at','=', $year)->get();
             array_push($tasks_array, $tasks->count());
         }
 
         foreach ($numeric_months as $nm) {
-            $tasks = Task::where('user_id', auth('api')->user()->id)->where('status','1')->whereMonth('created_at','=', $nm)
-            ->whereYear('created_at','=', $year)->get();
+            $tasks = !$user_role
+            ? Task::where('user_id', auth('api')->user()->id)->where('status','1')->whereMonth('created_at','=', $nm)->whereYear('created_at','=', $year)->get()
+            : Task::where('status','1')->whereMonth('created_at','=', $nm)->whereYear('created_at','=', $year)->get();
             array_push($other_completed_array, $tasks->count());
         }
 
         foreach ($numeric_months as $nm) {
-            $tasks = auth('api')->user()->tasks()->where('status','1')->whereMonth('created_at','=', $nm)
-            ->whereYear('created_at','=', $year)->get();
+            $tasks = !$user_role
+            ? auth('api')->user()->tasks()->where('status','1')->whereMonth('created_at','=', $nm)
+            ->whereYear('created_at','=', $year)->get()
+            : Task::where('status','1')->whereMonth('created_at','=', $nm)
+            ->whereYear('created_at','=', $year)->get()
+            ;
             array_push($own_completed_array, $tasks->count());
         }
 

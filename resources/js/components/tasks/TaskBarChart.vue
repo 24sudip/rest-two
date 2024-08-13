@@ -73,7 +73,7 @@
                             backgroundColor: 'lightblue'
                         });
                     }
-                    if (this.current_permissions.has('inbox-update')) {
+                    if (this.current_permissions.has('inbox-update') && !this.current_roles.has('admin')) {
                         datasets.push({
                             label: `Completed on my own - Tasks - ${response.data.year}`,
                             data: response.data.own_completed_array,

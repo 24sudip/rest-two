@@ -39,15 +39,52 @@
                         <button type="button" class="btn btn-success" @click.prevent="exportExcel">
                             <i class="fa fa-file-excel-o"></i>
                         </button>
+                        <button type="button" class="btn btn-danger mx-2" @click.prevent="exportPDF">
+                            <i class="fa fa-file-pdf-o"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <table id="tasks" style="display: none;">
+        <thead>
+            <tr>
+                <th>SL</th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Assign To</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(task, index) in tasks" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ task.title }}</td>
+                <td>
+                    <span :class="`badge ${task.priority == 'Urgent' ? 'badge-danger' : 'badge-success'}`">
+                        {{ task.priority }}
+                    </span>
+                </td>
+                <td>{{ task.start_date }}</td>
+                <td>{{ task.end_date }}</td>
+                <td>{{ task.users.length }} Staff Members</td>
+                <td>
+                    <p v-if="task.progress == 0" class="text-danger">No Progress</p>
+                    <p v-if="task.progress > 0 && task.progress < 100" class="text-warning">Under Progress</p>
+                    <p v-if="task.progress == 100" class="text-success">Completed</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </template>
 
 <script>
     const xlsx = require('xlsx');
+    import  jsPDF  from "jspdf";
+    import autoTable from 'jspdf-autotable';
     export default {
         data() {
             return {
@@ -56,6 +93,7 @@
                     start_date: '',
                     end_date: '',
                 }),
+                tasks: {},
             }
         },
         mounted() {
@@ -70,6 +108,15 @@
             },
         },
         methods: {
+            exportPDF() {
+                this.reportData.post(`${window.url}api/exportExcel`).then(response => {
+                    this.tasks = response.data;
+                }).then(() => {
+                    const doc = new jsPDF();
+                    autoTable(doc, { html: '#tasks' });
+                    doc.save('Tasks.pdf');
+                });
+            },
             exportExcel() {
                 let data = [];
                 this.reportData.post(`${window.url}api/exportExcel`).then(response => {
