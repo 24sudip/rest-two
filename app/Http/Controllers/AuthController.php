@@ -22,6 +22,10 @@ class AuthController extends Controller
             shell_exec('php ../artisan passport:install');
             $successToken = $user->createToken('task_token')->accessToken;
             session()->put('token', $successToken);
+            
+            $locale = 'en';
+            app()->setLocale($locale);
+            session()->put('locale', $locale);
             return redirect()->route('dashboard');
         }
         return back()->withErrors([

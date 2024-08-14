@@ -12,23 +12,39 @@ use App\Events\NotificationEvent;
 class TaskController extends Controller
 {
     public function searchTask() {
+        $user_role = auth('api')->user()->hasRole('admin');
         $user_id = auth('api')->user()->id;
         if ($search = \Request::get('users')) {
-            $tasks = Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('performed_by_user')
+            $tasks = !$user_role
+            ? Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('department')->with('performed_by_user')
+            ->whereHas('users', function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%$search%");
+            })->latest()->paginate(10)
+            : Task::where('parent_id','0')->with('users')->with('department')->with('performed_by_user')
             ->whereHas('users', function ($query) use ($search) {
                 $query->where('name', 'LIKE', "%$search%");
             })->latest()->paginate(10);
         } else if($search = \Request::get('title')){
-            $tasks = Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('performed_by_user')
+            $tasks = !$user_role
+            ? Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('department')->with('performed_by_user')
             ->where(function ($query) use ($search) {
-                $query
-                ->where('title', 'LIKE', "%$search%")
+                $query->where('title', 'LIKE', "%$search%")
+                ->orWhere('priority', 'LIKE', "%$search%")
+                ->orWhere('start_date', 'LIKE', "%$search%")
+                ->orWhere('end_date', 'LIKE', "%$search%");
+            })->latest()->paginate(10)
+            : Task::where('parent_id','0')->with('users')->with('department')->with('performed_by_user')
+            ->where(function ($query) use ($search) {
+                $query->where('title', 'LIKE', "%$search%")
                 ->orWhere('priority', 'LIKE', "%$search%")
                 ->orWhere('start_date', 'LIKE', "%$search%")
                 ->orWhere('end_date', 'LIKE', "%$search%");
             })->latest()->paginate(10);
         } else {
-            $tasks = Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('performed_by_user')->latest()
+            $tasks = !$user_role
+            ? Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('department')->with('performed_by_user')->latest()
+            ->paginate(10)
+            : Task::where('parent_id','0')->with('users')->with('department')->with('performed_by_user')->latest()
             ->paginate(10);
         }
         return response()->json($tasks);
@@ -39,8 +55,12 @@ class TaskController extends Controller
     }
 
     public function getTask() {
+        $user_role = auth('api')->user()->hasRole('admin');
         $user_id = auth('api')->user()->id;
-        return response()->json(Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('performed_by_user')->latest()->paginate(10));
+        $tasks = !$user_role
+        ? Task::where('user_id', $user_id)->where('parent_id','0')->with('users')->with('department')->with('performed_by_user')->latest()->paginate(10)
+        : Task::where('parent_id','0')->with('users')->with('department')->with('performed_by_user')->latest()->paginate(10);
+        return response()->json($tasks);
     }
 
     public function storeTask(Request $request) {

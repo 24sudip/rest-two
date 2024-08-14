@@ -22,7 +22,7 @@
                     </a>
                     <ul class="list-unstyled components mb-5">
                         <li class="{{ Request::is('dashboard') ? 'active' : ''}}">
-                            <a href="{{ route('dashboard') }}">Dashboard</a>
+                            <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
                         </li>
                         @can('admin')
                         <li class="{{ Request::is('department/index','user/index','role/index','permission/index') ? 'active' : ''}}">
@@ -64,15 +64,19 @@
                         @endcan
 
                         @can('inbox-read')
-                        <li class="{{ Request::is('task/inbox') ? 'active' : ''}}">
-                            <a href="{{ route('task.inbox') }}">Inbox Tasks</a>
-                        </li>
+                            @cannot('admin')
+                            <li class="{{ Request::is('task/inbox') ? 'active' : ''}}">
+                                <a href="{{ route('task.inbox') }}">Inbox Tasks</a>
+                            </li>
+                            @endcannot
                         @endcan
 
                         @can('completed-read')
-                        <li class="{{ Request::is('task/completed') ? 'active' : ''}}">
-                            <a href="{{ route('task.completed') }}">Completed Tasks</a>
-                        </li>
+                            @cannot('admin')
+                            <li class="{{ Request::is('task/completed') ? 'active' : ''}}">
+                                <a href="{{ route('task.completed') }}">Completed Tasks</a>
+                            </li>
+                            @endcannot
                         @endcan
 
                         @can('reports-read')
@@ -117,6 +121,7 @@
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="nav navbar-nav ml-auto">
+                                @include('partials.languageSwitcher')
                                 <li class="nav-item active">
                                     <a class="nav-link" href="{{ route('profile.index') }}">Settings</a>
                                 </li>

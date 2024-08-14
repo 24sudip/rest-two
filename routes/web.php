@@ -14,6 +14,13 @@ use App\Http\Controllers\{AuthController, ProfileController, TaskController};
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('language/{locale}', function ($locale) {
+    app()->setLocale($locale);
+    session()->put('locale', $locale);
+    return redirect()->back();
+})->name('localization');
+
 Route::get('/', function () {
     return redirect('/login');
 });

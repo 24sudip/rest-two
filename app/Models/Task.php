@@ -25,6 +25,11 @@ class Task extends Model
         'status',
     ];
 
+    public function department()
+    {
+        return $this->belongsTo('App\Models\Department');
+    }
+
     public function users()
     {
         return $this->belongsToMany('App\Models\User');

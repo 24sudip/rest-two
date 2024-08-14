@@ -97,6 +97,11 @@ return [
     */
 
     'fallback_locale' => 'en',
+    'available_locales'=> [
+        'English'=>'en',
+        'Bengali'=>'bn_BD',
+        // 'Dari'=>'dr',
+    ],
 
     /*
     |--------------------------------------------------------------------------
